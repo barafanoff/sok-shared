@@ -21,10 +21,10 @@
   --text-primary: #f0f0f5;
   --text-secondary: #9898a8;
   --text-muted: #6b6b7d;
-  --accent: #d4a843;
-  --accent-glow: rgba(212, 168, 67, 0.3);
-  --accent-dim: rgba(212, 168, 67, 0.12);
-  --accent-bright: #e8be55;
+  --accent: #2979ff;
+  --accent-glow: rgba(41, 121, 255, 0.3);
+  --accent-dim: rgba(41, 121, 255, 0.12);
+  --accent-bright: #64b5f6;
   --red-accent: #e05555;
   --red-dim: rgba(224, 85, 85, 0.12);
   --green-accent: #4ade80;
@@ -32,7 +32,7 @@
   --blue-accent: #60a5fa;
   --blue-dim: rgba(96, 165, 250, 0.12);
   --border: rgba(255, 255, 255, 0.06);
-  --border-accent: rgba(212, 168, 67, 0.25);
+  --border-accent: rgba(41, 121, 255, 0.25);
 }
 
 html, body {
@@ -125,7 +125,7 @@ html, body {
 
 .nav-dot.active {
   background: var(--accent);
-  box-shadow: 0 0 12px var(--accent-glow), 0 0 24px rgba(212, 168, 67, 0.15);
+  box-shadow: 0 0 12px var(--accent-glow), 0 0 24px rgba(41, 121, 255, 0.15);
   transform: scale(1.3);
 }
 
@@ -273,7 +273,7 @@ html, body {
 
 .opening-title .accent {
   color: var(--accent);
-  text-shadow: 0 0 40px var(--accent-glow), 0 0 80px rgba(212, 168, 67, 0.1);
+  text-shadow: 0 0 40px var(--accent-glow), 0 0 80px rgba(41, 121, 255, 0.1);
 }
 
 .opening-subtitle {
@@ -893,7 +893,7 @@ html, body {
 .path-node-dot.now {
   background: var(--accent);
   color: var(--bg-primary);
-  box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(212, 168, 67, 0.1);
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(41, 121, 255, 0.1);
 }
 
 .path-node-dot.future {
@@ -992,7 +992,7 @@ html, body {
   letter-spacing: 0.02em;
   border-radius: 12px;
   text-decoration: none;
-  box-shadow: 0 4px 24px var(--accent-glow), 0 0 60px rgba(212, 168, 67, 0.1);
+  box-shadow: 0 4px 24px var(--accent-glow), 0 0 60px rgba(41, 121, 255, 0.1);
   opacity: 0;
   transform: translateY(16px);
   transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.8s;
@@ -1001,7 +1001,7 @@ html, body {
 }
 
 .apply-email:hover {
-  box-shadow: 0 4px 32px rgba(212, 168, 67, 0.5), 0 0 80px rgba(212, 168, 67, 0.15);
+  box-shadow: 0 4px 32px rgba(41, 121, 255, 0.5), 0 0 80px rgba(41, 121, 255, 0.15);
   transform: translateY(-2px) !important;
 }
 
@@ -1367,17 +1367,32 @@ html, body {
 
   <!-- SLIDE 6: APPLY -->
   <div class="slide slide-apply" data-index="5">
-    <div class="slide-inner">
-      <div class="apply-title">Ready to Build<br>Something <span class="accent">Real</span>?</div>
-      <div class="apply-subtitle">If you see a challenge where others see a job posting &mdash; we should talk.</div>
-      <a href="mailto:hr@sok.co.il?subject=Head%20of%20Sales%20%E2%80%94%20Application" class="apply-email">
-        <span class="apply-email-icon">&#9993;</span> hr@sok.co.il
-      </a>
-      <div class="apply-details">
-        Full-time <span>|</span> On-site <span>|</span> Rishon LeZion &amp; Tel Aviv <span>|</span> Reports to CEO <span>|</span> Start: Immediate
-      </div>
-      <div class="apply-closing">
-        The best deals are closed by people who believe in what they sell.<br>At SOK, <strong>you will.</strong>
+    <div class="slide-inner" style="align-items: center;">
+      <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+        <div class="label fade-up" style="text-align: center;">Ready?</div>
+        <div class="apply-title fade-up" style="margin-top: 12px;">Ready to Build<br>Something <span class="accent">Real</span>?</div>
+        <div class="apply-subtitle fade-up" style="max-width: 560px; margin: 20px auto 40px;">Send your CV and a short note on why you're the right person to build SOK's revenue engine.</div>
+        <div class="fade-up" style="display: flex; justify-content: center;">
+          <a href="mailto:ba@sok.works?subject=Head%20of%20Sales%20%E2%80%94%20Application" class="apply-email">
+            Apply Now →
+          </a>
+        </div>
+        <div class="apply-details fade-up" style="margin-top: 32px;">
+          <span style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            Rishon LeZion &amp; Tel Aviv
+          </span>
+          <span>|</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            Full-time · Immediate Start
+          </span>
+          <span>|</span>
+          <span>Reports to CEO</span>
+        </div>
+        <div class="fade-up" style="margin-top: 28px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); letter-spacing: 1px;">
+          ba@sok.works
+        </div>
       </div>
     </div>
   </div>
@@ -1424,7 +1439,7 @@ html, body {
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < CONNECTION_DIST) {
           const alpha = (1 - dist / CONNECTION_DIST) * 0.06;
-          ctx.strokeStyle = `rgba(212, 168, 67, ${alpha})`;
+          ctx.strokeStyle = `rgba(41, 121, 255, ${alpha})`;
           ctx.lineWidth = 0.5;
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
@@ -1459,7 +1474,7 @@ html, body {
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(212, 168, 67, ${p.opacity})`;
+      ctx.fillStyle = `rgba(41, 121, 255, ${p.opacity})`;
       ctx.fill();
     }
 

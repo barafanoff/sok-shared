@@ -12,10 +12,10 @@
   --bg-deep: #12121f;
   --card: #222240;
   --card-hover: #2a2a4a;
-  --accent: #d4a03c;
-  --accent-light: #e8b84a;
-  --accent-glow: rgba(212, 160, 60, 0.15);
-  --accent-glow-strong: rgba(212, 160, 60, 0.3);
+  --accent: #2979ff;
+  --accent-light: #64b5f6;
+  --accent-glow: rgba(41, 121, 255, 0.15);
+  --accent-glow-strong: rgba(41, 121, 255, 0.3);
   --green: #10b981;
   --green-dim: rgba(16, 185, 129, 0.15);
   --red: #ef4444;
@@ -1085,28 +1085,38 @@ html, body {
 
   <!-- ===== SLIDE 6: APPLY ===== -->
   <div class="slide apply-slide" data-slide="5">
-    <h1 class="apply-headline">Ready to <span class="accent">Drive Revenue</span>?</h1>
-    <p class="apply-sub">We receive qualified leads. Our spaces sell themselves. What we need is someone sharp enough to connect the two.</p>
+    <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <div class="slide-header" style="text-align: center;">
+        <div class="label">Ready?</div>
+      </div>
+      <h1 class="apply-headline">Ready to <span class="accent">Drive Revenue</span>?</h1>
+      <p class="apply-sub" style="max-width: 560px; margin: 20px auto 40px;">Send your CV and a short note on what makes you a great closer. Our product does the selling — we need someone to make the connection.</p>
 
-    <div class="apply-email-container">
-      <a class="apply-email" href="mailto:hr@sok.co.il" id="emailBtn">
-        <span>&#x2709;</span> hr@sok.co.il
-      </a>
+      <div class="apply-email-container" style="display: flex; justify-content: center;">
+        <a class="apply-email" href="mailto:ba@sok.works?subject=Sales%20Representative%20%E2%80%94%20Application" id="emailBtn">
+          Apply Now →
+        </a>
+      </div>
+
+      <div class="apply-details" style="margin-top: 32px;">
+        <div class="apply-detail">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          Rishon LeZion, Israel
+        </div>
+        <div class="apply-detail">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          Full-time · Immediate Start
+        </div>
+        <div class="apply-detail">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          Reports to Head of Sales
+        </div>
+      </div>
+
+      <div style="margin-top: 28px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 1px;">
+        ba@sok.works
+      </div>
     </div>
-
-    <div class="apply-details">
-      <div class="apply-detail">
-        <span class="detail-icon">&#x1F4CD;</span> Rishon LeZion, Israel
-      </div>
-      <div class="apply-detail">
-        <span class="detail-icon">&#x23F0;</span> Immediate start
-      </div>
-      <div class="apply-detail">
-        <span class="detail-icon">&#x1F465;</span> Reports to Head of Sales
-      </div>
-    </div>
-
-    <div class="apply-closing">SOK &mdash; Premium Flexible Workspaces</div>
   </div>
 
   <!-- Navigation -->
@@ -1176,7 +1186,7 @@ html, body {
       // Draw
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(212, 160, 60, ${p.opacity})`;
+      ctx.fillStyle = `rgba(41, 121, 255, ${p.opacity})`;
       ctx.fill();
     });
 
@@ -1190,7 +1200,7 @@ html, body {
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(212, 160, 60, ${0.06 * (1 - dist / 120)})`;
+          ctx.strokeStyle = `rgba(41, 121, 255, ${0.06 * (1 - dist / 120)})`;
           ctx.lineWidth = 0.5;
           ctx.stroke();
         }
@@ -1353,12 +1363,12 @@ html, body {
 
   emailBtn.addEventListener('click', function(e) {
     e.preventDefault();
-    navigator.clipboard.writeText('hr@sok.co.il').then(() => {
+    navigator.clipboard.writeText('ba@sok.works').then(() => {
       copyToast.classList.add('visible');
       setTimeout(() => copyToast.classList.remove('visible'), 2000);
     }).catch(() => {
       // Fallback: open mailto
-      window.location.href = 'mailto:hr@sok.co.il';
+      window.location.href = 'mailto:ba@sok.works?subject=Sales%20Representative%20%E2%80%94%20Application';
     });
   });
 
