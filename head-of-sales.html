@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Head of Sales | SOK — Premium Flexible Workspaces</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-primary: #111117;
+  --bg-secondary: #1a1a24;
+  --bg-card: #1e1e2a;
+  --bg-card-hover: #252536;
+  --text-primary: #f0f0f5;
+  --text-secondary: #9898a8;
+  --text-muted: #6b6b7d;
+  --accent: #d4a843;
+  --accent-glow: rgba(212, 168, 67, 0.3);
+  --accent-dim: rgba(212, 168, 67, 0.12);
+  --accent-bright: #e8be55;
+  --red-accent: #e05555;
+  --red-dim: rgba(224, 85, 85, 0.12);
+  --green-accent: #4ade80;
+  --green-dim: rgba(74, 222, 128, 0.12);
+  --blue-accent: #60a5fa;
+  --blue-dim: rgba(96, 165, 250, 0.12);
+  --border: rgba(255, 255, 255, 0.06);
+  --border-accent: rgba(212, 168, 67, 0.25);
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* ==================== CANVAS BACKGROUND ==================== */
+#bg-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ==================== SLIDE SYSTEM ==================== */
+.presentation {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  padding: 60px 80px;
+  visibility: hidden;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.slide.exiting {
+  opacity: 0;
+  transform: translateY(-30px);
+  visibility: visible;
+}
+
+.slide-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ==================== NAVIGATION ==================== */
+.nav-dots {
+  position: fixed;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 100;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  border: none;
+  position: relative;
+}
+
+.nav-dot:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.3);
+}
+
+.nav-dot.active {
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow), 0 0 24px rgba(212, 168, 67, 0.15);
+  transform: scale(1.3);
+}
+
+.nav-dot::after {
+  content: attr(data-label);
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  letter-spacing: 0.03em;
+}
+
+.nav-dot:hover::after {
+  opacity: 1;
+}
+
+.slide-counter {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+  z-index: 100;
+  letter-spacing: 0.05em;
+}
+
+.slide-counter .current {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* SOK logo / branding top-left */
+.brand-mark {
+  position: fixed;
+  top: 28px;
+  left: 36px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark .logo-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  color: var(--text-primary);
+}
+
+.brand-mark .logo-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.brand-mark .logo-subtitle {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Keyboard hint */
+.keyboard-hint {
+  position: fixed;
+  bottom: 32px;
+  left: 36px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.6;
+  transition: opacity 0.5s;
+}
+
+.keyboard-hint.hidden {
+  opacity: 0;
+}
+
+.key-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* ==================== SLIDE 1: OPENING ==================== */
+.slide-opening {
+  text-align: center;
+  flex-direction: column;
+}
+
+.opening-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 28px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+}
+
+.slide.active .opening-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.opening-title {
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 1s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
+}
+
+.slide.active .opening-title {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.opening-title .accent {
+  color: var(--accent);
+  text-shadow: 0 0 40px var(--accent-glow), 0 0 80px rgba(212, 168, 67, 0.1);
+}
+
+.opening-subtitle {
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 24px auto 0;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.9s;
+}
+
+.slide.active .opening-subtitle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.opening-line {
+  width: 80px;
+  height: 2px;
+  background: var(--accent);
+  margin: 32px auto 0;
+  opacity: 0;
+  transform: scaleX(0);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1.2s;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.slide.active .opening-line {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.opening-location {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 20px;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  transition: opacity 0.8s 1.5s;
+}
+
+.slide.active .opening-location {
+  opacity: 1;
+}
+
+/* ==================== SLIDE 2: SOK AT A GLANCE ==================== */
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 40px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 24px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.metric-card:hover::before {
+  opacity: 1;
+}
+
+.metric-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+}
+
+.slide.active .metric-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide.active .metric-card:nth-child(1) { transition-delay: 0.2s; }
+.slide.active .metric-card:nth-child(2) { transition-delay: 0.35s; }
+.slide.active .metric-card:nth-child(3) { transition-delay: 0.5s; }
+.slide.active .metric-card:nth-child(4) { transition-delay: 0.65s; }
+.slide.active .metric-card:nth-child(5) { transition-delay: 0.8s; }
+
+.metric-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 0 0 30px var(--accent-glow);
+}
+
+.metric-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.metric-sublabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.clients-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1s;
+}
+
+.slide.active .clients-row {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.clients-row-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.clients-row-names {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.clients-row-names span {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ==================== SLIDE 3: THE ROLE ==================== */
+.role-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.role-left {
+  padding-right: 20px;
+}
+
+.wow-stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+}
+
+.slide.active .wow-stat {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.wow-stat::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  box-shadow: inset 0 0 60px var(--accent-dim);
+  pointer-events: none;
+}
+
+.wow-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(48px, 5vw, 72px);
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 40px var(--accent-glow);
+  line-height: 1;
+}
+
+.wow-percent {
+  font-size: 0.6em;
+}
+
+.wow-text {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.wow-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.role-description {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
+}
+
+.slide.active .role-description {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.own-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.own-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  opacity: 0;
+  transform: translateX(24px);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.slide.active .own-item:nth-child(1) { opacity: 1; transform: translateX(0); transition-delay: 0.3s; }
+.slide.active .own-item:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.42s; }
+.slide.active .own-item:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.54s; }
+.slide.active .own-item:nth-child(4) { opacity: 1; transform: translateX(0); transition-delay: 0.66s; }
+.slide.active .own-item:nth-child(5) { opacity: 1; transform: translateX(0); transition-delay: 0.78s; }
+
+.own-item:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+}
+
+.own-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.own-content h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.own-content p {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ==================== SLIDE 4: WHO YOU ARE ==================== */
+.who-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.check-item:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.slide.active .check-item {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide.active .check-item:nth-child(1) { transition-delay: 0.2s; }
+.slide.active .check-item:nth-child(2) { transition-delay: 0.3s; }
+.slide.active .check-item:nth-child(3) { transition-delay: 0.4s; }
+.slide.active .check-item:nth-child(4) { transition-delay: 0.5s; }
+.slide.active .check-item:nth-child(5) { transition-delay: 0.6s; }
+.slide.active .check-item:nth-child(6) { transition-delay: 0.7s; }
+
+.check-icon {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.check-icon.must {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.standout-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
+}
+
+.slide.active .standout-box {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.standout-box h3 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.standout-box h3 .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.standout-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.standout-list li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.standout-list li::before {
+  content: '+';
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.standout-green h3 { color: var(--green-accent); }
+.standout-green h3 .dot { background: var(--green-accent); box-shadow: 0 0 8px rgba(74, 222, 128, 0.4); }
+.standout-green .standout-list li::before { color: var(--green-accent); }
+
+.not-fit-box {
+  background: var(--bg-card);
+  border: 1px solid rgba(224, 85, 85, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.7s;
+}
+
+.slide.active .not-fit-box {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.not-fit-box h3 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red-accent);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.not-fit-box h3 .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red-accent);
+  box-shadow: 0 0 8px rgba(224, 85, 85, 0.4);
+}
+
+.not-fit-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.not-fit-list li {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.not-fit-list li::before {
+  content: '\00D7';
+  position: absolute;
+  left: 0;
+  color: var(--red-accent);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+/* ==================== SLIDE 5: WHAT YOU GET ==================== */
+.benefits-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.benefit-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.benefit-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+}
+
+.slide.active .benefit-card:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+.slide.active .benefit-card:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.35s; }
+.slide.active .benefit-card:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
+.slide.active .benefit-card:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.65s; }
+
+.benefit-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.benefit-icon.gold { background: var(--accent-dim); color: var(--accent); }
+.benefit-icon.blue { background: var(--blue-dim); color: var(--blue-accent); }
+.benefit-icon.green { background: var(--green-dim); color: var(--green-accent); }
+
+.benefit-text h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.benefit-text p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Growth Path */
+.growth-path {
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.8s;
+}
+
+.slide.active .growth-path {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.growth-path-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.path-timeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
+}
+
+.path-node {
+  text-align: center;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.path-node-dot {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  position: relative;
+}
+
+.path-node-dot.now {
+  background: var(--accent);
+  color: var(--bg-primary);
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(212, 168, 67, 0.1);
+}
+
+.path-node-dot.future {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  color: var(--text-muted);
+}
+
+.path-node-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.path-node-sublabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.path-connector {
+  flex: 0.5;
+  height: 2px;
+  background: var(--border);
+  position: relative;
+  top: -18px;
+  z-index: 1;
+}
+
+.path-connector.active-line {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.path-connector-arrow {
+  flex: 0.5;
+  height: 2px;
+  position: relative;
+  top: -18px;
+  z-index: 1;
+  background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 6px, transparent 6px, transparent 12px);
+}
+
+/* ==================== SLIDE 6: APPLY ==================== */
+.slide-apply {
+  text-align: center;
+}
+
+.apply-title {
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+}
+
+.slide.active .apply-title {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.apply-title .accent {
+  color: var(--accent);
+  text-shadow: 0 0 40px var(--accent-glow);
+}
+
+.apply-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.6s;
+}
+
+.slide.active .apply-subtitle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.apply-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 40px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 4px 24px var(--accent-glow), 0 0 60px rgba(212, 168, 67, 0.1);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.8s;
+  cursor: pointer;
+  border: none;
+}
+
+.apply-email:hover {
+  box-shadow: 0 4px 32px rgba(212, 168, 67, 0.5), 0 0 80px rgba(212, 168, 67, 0.15);
+  transform: translateY(-2px) !important;
+}
+
+.slide.active .apply-email {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.apply-email-icon {
+  font-size: 20px;
+}
+
+.apply-details {
+  margin-top: 28px;
+  font-size: 13px;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.6s 1s;
+}
+
+.slide.active .apply-details {
+  opacity: 1;
+}
+
+.apply-details span {
+  display: inline-block;
+  margin: 0 12px;
+  color: rgba(255, 255, 255, 0.15);
+}
+
+.apply-closing {
+  margin-top: 48px;
+  font-size: 15px;
+  color: var(--text-muted);
+  font-style: italic;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1.2s;
+}
+
+.slide.active .apply-closing {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.apply-closing strong {
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+  .slide { padding: 40px 50px; }
+  .role-layout, .who-layout, .benefits-layout { grid-template-columns: 1fr; gap: 28px; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav-dots { right: 18px; }
+}
+
+@media (max-width: 768px) {
+  .slide { padding: 30px 28px; }
+  .metrics-grid { grid-template-columns: 1fr; }
+  .brand-mark { display: none; }
+  .keyboard-hint { display: none; }
+  .path-timeline { flex-direction: column; gap: 12px; }
+  .path-connector, .path-connector-arrow { display: none; }
+}
+
+/* Progress bar top */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+  z-index: 200;
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Subtle scan-line effect for depth */
+.scanline-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.015) 2px,
+    rgba(0, 0, 0, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="scanline-overlay"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Brand Mark -->
+<div class="brand-mark">
+  <div class="logo-text">SOK</div>
+  <div class="logo-divider"></div>
+  <div class="logo-subtitle">Premium Workspaces</div>
+</div>
+
+<!-- Navigation Dots -->
+<div class="nav-dots" id="navDots">
+  <button class="nav-dot active" data-slide="0" data-label="Opening"></button>
+  <button class="nav-dot" data-slide="1" data-label="SOK at a Glance"></button>
+  <button class="nav-dot" data-slide="2" data-label="The Role"></button>
+  <button class="nav-dot" data-slide="3" data-label="Who You Are"></button>
+  <button class="nav-dot" data-slide="4" data-label="What You Get"></button>
+  <button class="nav-dot" data-slide="5" data-label="Apply"></button>
+</div>
+
+<!-- Slide Counter -->
+<div class="slide-counter">
+  <span class="current" id="counterCurrent">01</span> / <span id="counterTotal">06</span>
+</div>
+
+<!-- Keyboard Hint -->
+<div class="keyboard-hint" id="keyboardHint">
+  <span class="key-icon">&larr;</span>
+  <span class="key-icon">&rarr;</span>
+  <span>or Space to navigate</span>
+</div>
+
+<!-- ==================== PRESENTATION ==================== -->
+<div class="presentation">
+
+  <!-- SLIDE 1: OPENING -->
+  <div class="slide slide-opening active" data-index="0">
+    <div class="slide-inner">
+      <div class="opening-label">We're Hiring</div>
+      <div class="opening-title">Head of <span class="accent">Sales</span></div>
+      <div class="opening-subtitle">Build the revenue engine for Israel's fastest-growing premium flexible workspace operator.</div>
+      <div class="opening-line"></div>
+      <div class="opening-location">Israel &mdash; Rishon LeZion (primary) &bull; Tel Aviv (secondary) &bull; Full-time, On-site</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: SOK AT A GLANCE -->
+  <div class="slide" data-index="1">
+    <div class="slide-inner">
+      <div class="section-label">About SOK</div>
+      <div class="section-title">Built to Lead</div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value" data-count="10600" data-suffix=" sqm">0</div>
+          <div class="metric-label">Total Workspace</div>
+          <div class="metric-sublabel">2 premium locations</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">#2 &amp; #3</div>
+          <div class="metric-label">National Ranking</div>
+          <div class="metric-sublabel">of 180+ spaces in Israel</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" data-count="60" data-suffix="+" data-prefix="NPS ">0</div>
+          <div class="metric-label">Client Satisfaction</div>
+          <div class="metric-sublabel">market avg: 30-40</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" data-count="20" data-suffix="+ mo">0</div>
+          <div class="metric-label">Avg Contract Duration</div>
+          <div class="metric-sublabel">+67% vs market benchmark</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" data-count="60" data-suffix="%">0</div>
+          <div class="metric-label">Client Expansion Rate</div>
+          <div class="metric-sublabel">clients grow within SOK</div>
+        </div>
+      </div>
+      <div class="clients-row">
+        <div class="clients-row-label">Clients</div>
+        <div class="clients-row-names"><span>Channel 12</span> &bull; <span>Maccabi</span> &bull; <span>Exodigo</span> &bull; <span>Ministry of Defense</span> &bull; <span>Discount Bank</span> &bull; <span>Israir</span> &bull; <span>Taglit</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: THE ROLE -->
+  <div class="slide" data-index="2">
+    <div class="slide-inner">
+      <div class="section-label">The Role</div>
+      <div class="section-title" style="margin-bottom: 32px;">Player-Coach.<br>Revenue Builder.</div>
+      <div class="role-layout">
+        <div class="role-left">
+          <div class="wow-stat">
+            <div class="wow-number"><span data-count="60" class="counter-inline">0</span>&ndash;<span data-count="70" class="counter-inline">0</span><span class="wow-percent">%</span></div>
+            <div class="wow-text">of people who tour our space say <strong>"wow."</strong><br>Your job: get them through the door and <strong>convert them into clients.</strong></div>
+          </div>
+          <div class="role-description">
+            We need a sales leader who builds the revenue engine. Not from a corner office &mdash; from the floor, next to the team, closing deals and coaching others.
+          </div>
+        </div>
+        <div class="role-right">
+          <ul class="own-list">
+            <li class="own-item">
+              <div class="own-icon">01</div>
+              <div class="own-content">
+                <h4>Full Sales Pipeline</h4>
+                <p>From lead to signed contract, across both locations</p>
+              </div>
+            </li>
+            <li class="own-item">
+              <div class="own-icon">02</div>
+              <div class="own-content">
+                <h4>Personal Deal Closing</h4>
+                <p>Especially medium &amp; large clients (15+ workstations)</p>
+              </div>
+            </li>
+            <li class="own-item">
+              <div class="own-icon">03</div>
+              <div class="own-content">
+                <h4>Broker Network</h4>
+                <p>Build and maintain a broker network that delivers enterprise deals</p>
+              </div>
+            </li>
+            <li class="own-item">
+              <div class="own-icon">04</div>
+              <div class="own-content">
+                <h4>Your Team</h4>
+                <p>Hire, onboard, and manage a Sales Rep. Daily pipeline reviews, deal coaching</p>
+              </div>
+            </li>
+            <li class="own-item">
+              <div class="own-icon">05</div>
+              <div class="own-content">
+                <h4>Sales Playbook</h4>
+                <p>Scripts, objection handling, follow-up cadence, proposals. Build it from scratch</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: WHO YOU ARE -->
+  <div class="slide" data-index="3">
+    <div class="slide-inner">
+      <div class="section-label">Who You Are</div>
+      <div class="section-title" style="margin-bottom: 32px;">The Right Person</div>
+      <div class="who-layout">
+        <div class="left-column">
+          <ul class="checklist">
+            <li class="check-item">
+              <span class="check-icon must">&#10003;</span>
+              3-5 years in B2B sales with a proven closing track record
+            </li>
+            <li class="check-item">
+              <span class="check-icon must">&#10003;</span>
+              At least 1 year managing or mentoring salespeople
+            </li>
+            <li class="check-item">
+              <span class="check-icon must">&#10003;</span>
+              Consultative / complex B2B sales &amp; Israeli negotiation dynamics
+            </li>
+            <li class="check-item">
+              <span class="check-icon must">&#10003;</span>
+              CRM proficiency (HubSpot preferred)
+            </li>
+            <li class="check-item">
+              <span class="check-icon must">&#10003;</span>
+              Hebrew required. English &mdash; strong working level
+            </li>
+            <li class="check-item">
+              <span class="check-icon must">&#10003;</span>
+              On-site daily &mdash; both locations
+            </li>
+          </ul>
+        </div>
+        <div class="right-column">
+          <div class="standout-box standout-green">
+            <h3><span class="dot"></span> Stand Out If</h3>
+            <ul class="standout-list">
+              <li>Real estate / hospitality / coworking background</li>
+              <li>You've built a sales process from scratch</li>
+              <li>You've sold premium products where value justification beats price discounting</li>
+              <li>You were the first or second sales hire somewhere</li>
+            </ul>
+          </div>
+          <div class="not-fit-box">
+            <h3><span class="dot"></span> Not a Fit</h3>
+            <ul class="not-fit-list">
+              <li>Pure managers who don't sell</li>
+              <li>Big-company directors who need a team of 10</li>
+              <li>People who lead with discounts</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: WHAT YOU GET -->
+  <div class="slide" data-index="4">
+    <div class="slide-inner">
+      <div class="section-label">What You Get</div>
+      <div class="section-title" style="margin-bottom: 32px;">Rewarded for Results</div>
+      <div class="benefits-layout">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="benefit-card">
+            <div class="benefit-icon gold">&#8362;</div>
+            <div class="benefit-text">
+              <h4>Competitive Compensation</h4>
+              <p>Base salary + performance bonus tied to personal deals, team results, and quarterly targets</p>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon blue">&#9733;</div>
+            <div class="benefit-text">
+              <h4>SOK Employee Benefits</h4>
+              <p>Full benefits package, parking, and perks of working in a premium workspace</p>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon green">&#x2191;</div>
+            <div class="benefit-text">
+              <h4>Documented Growth Plan</h4>
+              <p>Salary milestones tied to business results &mdash; not vague promises, concrete numbers</p>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon gold">&#x27A4;</div>
+            <div class="benefit-text">
+              <h4>Direct CEO Access</h4>
+              <p>No layers. Your impact is visible in the numbers every week. Shape the business strategy firsthand</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="growth-path">
+            <div class="growth-path-title">Your Growth Path</div>
+            <div class="path-timeline">
+              <div class="path-node">
+                <div class="path-node-dot now">1</div>
+                <div class="path-node-label">Player-Coach</div>
+                <div class="path-node-sublabel">now</div>
+              </div>
+              <div class="path-connector active-line"></div>
+              <div class="path-node">
+                <div class="path-node-dot future">2</div>
+                <div class="path-node-label">Sales Director</div>
+                <div class="path-node-sublabel">new locations open</div>
+              </div>
+              <div class="path-connector-arrow"></div>
+              <div class="path-node">
+                <div class="path-node-dot future">3</div>
+                <div class="path-node-label">VP Sales</div>
+                <div class="path-node-sublabel">SOK scales nationally</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: APPLY -->
+  <div class="slide slide-apply" data-index="5">
+    <div class="slide-inner">
+      <div class="apply-title">Ready to Build<br>Something <span class="accent">Real</span>?</div>
+      <div class="apply-subtitle">If you see a challenge where others see a job posting &mdash; we should talk.</div>
+      <a href="mailto:hr@sok.co.il?subject=Head%20of%20Sales%20%E2%80%94%20Application" class="apply-email">
+        <span class="apply-email-icon">&#9993;</span> hr@sok.co.il
+      </a>
+      <div class="apply-details">
+        Full-time <span>|</span> On-site <span>|</span> Rishon LeZion &amp; Tel Aviv <span>|</span> Reports to CEO <span>|</span> Start: Immediate
+      </div>
+      <div class="apply-closing">
+        The best deals are closed by people who believe in what they sell.<br>At SOK, <strong>you will.</strong>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ==================== PARTICLE GRID BACKGROUND ====================
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let width, height, particles = [], mouse = { x: -1000, y: -1000 };
+  const PARTICLE_COUNT = 80;
+  const CONNECTION_DIST = 150;
+  const MOUSE_RADIUS = 200;
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+
+  function createParticles() {
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        size: Math.random() * 1.5 + 0.5,
+        opacity: Math.random() * 0.4 + 0.1
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECTION_DIST) {
+          const alpha = (1 - dist / CONNECTION_DIST) * 0.06;
+          ctx.strokeStyle = `rgba(212, 168, 67, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw particles
+    for (const p of particles) {
+      // Mouse repulsion
+      const mdx = p.x - mouse.x;
+      const mdy = p.y - mouse.y;
+      const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+      if (mdist < MOUSE_RADIUS) {
+        const force = (1 - mdist / MOUSE_RADIUS) * 0.8;
+        p.vx += (mdx / mdist) * force;
+        p.vy += (mdy / mdist) * force;
+      }
+
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vx *= 0.99;
+      p.vy *= 0.99;
+
+      // Wrap
+      if (p.x < -10) p.x = width + 10;
+      if (p.x > width + 10) p.x = -10;
+      if (p.y < -10) p.y = height + 10;
+      if (p.y > height + 10) p.y = -10;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(212, 168, 67, ${p.opacity})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); createParticles(); });
+  document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+  resize();
+  createParticles();
+  draw();
+})();
+
+// ==================== SLIDE NAVIGATION ====================
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.nav-dot');
+  const counterCurrent = document.getElementById('counterCurrent');
+  const progressBar = document.getElementById('progressBar');
+  const keyboardHint = document.getElementById('keyboardHint');
+  const total = slides.length;
+  let current = 0;
+  let transitioning = false;
+
+  function goTo(index) {
+    if (index < 0 || index >= total || index === current || transitioning) return;
+    transitioning = true;
+
+    // Hide hint after first navigation
+    keyboardHint.classList.add('hidden');
+
+    const prev = slides[current];
+    const next = slides[index];
+
+    prev.classList.remove('active');
+    prev.classList.add('exiting');
+
+    setTimeout(() => {
+      prev.classList.remove('exiting');
+      next.classList.add('active');
+      current = index;
+
+      // Update dots
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+
+      // Update counter
+      counterCurrent.textContent = String(current + 1).padStart(2, '0');
+
+      // Update progress bar
+      progressBar.style.width = ((current + 1) / total * 100) + '%';
+
+      // Trigger counters on this slide
+      animateCounters(next);
+
+      setTimeout(() => { transitioning = false; }, 100);
+    }, 350);
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    }
+  });
+
+  // Touch / swipe
+  let touchStartY = 0;
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx < -50) goTo(current + 1);
+      else if (dx > 50) goTo(current - 1);
+    } else {
+      if (dy < -50) goTo(current + 1);
+      else if (dy > 50) goTo(current - 1);
+    }
+  }, { passive: true });
+
+  // Dot clicks
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => goTo(parseInt(dot.dataset.slide)));
+  });
+
+  // Mouse wheel
+  let wheelTimeout = null;
+  document.addEventListener('wheel', e => {
+    e.preventDefault();
+    if (wheelTimeout) return;
+    wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 800);
+    if (e.deltaY > 30) goTo(current + 1);
+    else if (e.deltaY < -30) goTo(current - 1);
+  }, { passive: false });
+
+  // Init progress bar
+  progressBar.style.width = (1 / total * 100) + '%';
+
+  // Trigger counters on first slide
+  setTimeout(() => animateCounters(slides[0]), 500);
+})();
+
+// ==================== COUNTER ANIMATION ====================
+function animateCounters(slide) {
+  const counters = slide.querySelectorAll('[data-count]');
+  counters.forEach(el => {
+    if (el.dataset.animated) return;
+    el.dataset.animated = 'true';
+    const target = parseInt(el.dataset.count);
+    const suffix = el.dataset.suffix || '';
+    const prefix = el.dataset.prefix || '';
+    const duration = 1600;
+    const start = performance.now();
+
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeOutExpo
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const value = Math.round(eased * target);
+      el.textContent = prefix + value.toLocaleString() + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    // delay based on card index
+    const delay = Array.from(slide.querySelectorAll('[data-count]')).indexOf(el) * 150;
+    setTimeout(() => requestAnimationFrame(tick), 400 + delay);
+  });
+
+  // Also handle inline counters (the wow-stat)
+  const inlineCounters = slide.querySelectorAll('.counter-inline');
+  inlineCounters.forEach(el => {
+    if (el.dataset.animated) return;
+    el.dataset.animated = 'true';
+    const target = parseInt(el.dataset.count);
+    const duration = 1400;
+    const start = performance.now();
+
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      el.textContent = Math.round(eased * target);
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    setTimeout(() => requestAnimationFrame(tick), 600);
+  });
+}
+</script>
+
+</body>
+</html>
