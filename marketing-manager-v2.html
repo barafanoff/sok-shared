@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Manager — SOK</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg-card: #12121a;
+  --amber: #f59e0b;
+  --amber-dim: #b47108;
+  --coral: #ef4444;
+  --coral-dim: #b91c1c;
+  --white: #f5f5f5;
+  --gray: #888;
+  --gray-dim: #444;
+  --font-main: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+canvas#particles {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ========== SLIDE ENGINE ========== */
+.deck {
+  position: relative;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 80px;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.92) rotateY(6deg);
+  transition: none;
+  will-change: opacity, transform, clip-path;
+}
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1) rotateY(0deg);
+}
+.slide.exit-left {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.88) rotateY(-10deg) translateX(-8%);
+}
+.slide.exit-right {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.88) rotateY(10deg) translateX(8%);
+}
+.slide.enter-left {
+  transform: scale(0.92) rotateY(6deg) translateX(-6%);
+}
+.slide.enter-right {
+  transform: scale(0.92) rotateY(-6deg) translateX(6%);
+}
+
+/* ========== SLIDE COUNTER ========== */
+.slide-counter {
+  position: fixed;
+  top: 24px; right: 32px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--gray);
+  z-index: 100;
+  letter-spacing: 2px;
+}
+
+/* ========== NAV DOTS ========== */
+.nav-dots {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 100;
+}
+.nav-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--gray-dim);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  border: none;
+}
+.nav-dot.active {
+  background: var(--amber);
+  box-shadow: 0 0 12px var(--amber), 0 0 30px rgba(245,158,11,0.3);
+  transform: scale(1.3);
+}
+.nav-dot:hover:not(.active) {
+  background: var(--gray);
+  transform: scale(1.15);
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes letterExplode {
+  0% { opacity: 0; transform: scale(0) rotate(180deg) translateY(100px); filter: blur(20px); }
+  60% { opacity: 1; transform: scale(1.3) rotate(-5deg) translateY(-10px); filter: blur(0); }
+  80% { transform: scale(0.95) rotate(2deg) translateY(5px); }
+  100% { opacity: 1; transform: scale(1) rotate(0) translateY(0); filter: blur(0); }
+}
+
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideLeft {
+  0% { opacity: 0; transform: translateX(-40px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeSlideRight {
+  0% { opacity: 0; transform: translateX(40px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(245,158,11,0.2); }
+  50% { box-shadow: 0 0 40px rgba(245,158,11,0.5), 0 0 80px rgba(245,158,11,0.15); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes cursorBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(245,158,11,0.3); }
+  50% { border-color: rgba(245,158,11,0.7); }
+}
+
+@keyframes goldGlow {
+  0%, 100% { text-shadow: 0 0 10px rgba(245,158,11,0.4); }
+  50% { text-shadow: 0 0 30px rgba(245,158,11,0.8), 0 0 60px rgba(245,158,11,0.3); }
+}
+
+@keyframes rotateIn {
+  0% { opacity: 0; transform: perspective(600px) rotateX(-30deg) translateY(40px); }
+  100% { opacity: 1; transform: perspective(600px) rotateX(0deg) translateY(0); }
+}
+
+@keyframes progressFill {
+  0% { width: 0%; }
+}
+
+@keyframes wordReveal {
+  0% { opacity: 0; transform: translateY(20px) scale(0.9); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.anim-target {
+  opacity: 0;
+}
+.slide.active .anim-target {
+  opacity: 0;
+}
+.slide.active .anim-target.animated {
+  animation-fill-mode: forwards;
+}
+
+/* ========== SLIDE 1: TITLE ========== */
+.title-hero {
+  text-align: center;
+}
+.title-letters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.title-letter {
+  font-size: clamp(40px, 7vw, 90px);
+  font-weight: 700;
+  color: var(--white);
+  opacity: 0;
+  display: inline-block;
+  letter-spacing: 2px;
+}
+.title-letter.space { width: 24px; }
+.title-letter.animated {
+  animation: letterExplode 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.title-brand {
+  font-family: var(--font-mono);
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: 500;
+  color: var(--amber);
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+.title-subtitle {
+  font-size: clamp(14px, 1.8vw, 22px);
+  color: var(--gray);
+  max-width: 700px;
+  margin: 24px auto 0;
+  line-height: 1.6;
+  font-weight: 300;
+}
+.title-meta {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+.title-meta-item {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gray);
+  padding: 6px 16px;
+  border: 1px solid var(--gray-dim);
+  border-radius: 20px;
+}
+
+/* ========== SLIDE 2: COUNTING DASHBOARD ========== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 28px;
+  width: 100%;
+  max-width: 1000px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(245,158,11,0.15);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  transition: all 0.4s ease;
+}
+.stat-card:hover {
+  border-color: var(--amber);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(245,158,11,0.15);
+}
+.stat-number {
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 700;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+.stat-suffix {
+  font-size: 0.45em;
+  color: var(--amber-dim);
+  margin-left: 2px;
+}
+.stat-label {
+  font-size: 14px;
+  color: var(--gray);
+  margin-top: 10px;
+  line-height: 1.4;
+}
+.dashboard-headline {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.dashboard-headline h2 {
+  font-size: clamp(22px, 3vw, 38px);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.dashboard-headline h2 .accent { color: var(--amber); }
+.dashboard-subtext {
+  font-size: 15px;
+  color: var(--gray);
+  font-style: italic;
+}
+.award-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(239,68,68,0.1));
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 12px;
+  padding: 14px 28px;
+  margin-top: 24px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--amber);
+  animation: borderGlow 3s infinite;
+}
+
+/* ========== SLIDE 3: TERMINAL ========== */
+.terminal-window {
+  background: #0d0d14;
+  border: 1px solid #2a2a3a;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 820px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #16161e;
+  border-bottom: 1px solid #2a2a3a;
+}
+.terminal-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+}
+.terminal-dot.red { background: #ff5f57; }
+.terminal-dot.yellow { background: #febc2e; }
+.terminal-dot.green { background: #28c840; }
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gray);
+}
+.terminal-body {
+  padding: 28px;
+  font-family: var(--font-mono);
+  font-size: clamp(13px, 1.5vw, 16px);
+  line-height: 1.8;
+  min-height: 280px;
+}
+.terminal-line {
+  margin-bottom: 6px;
+  opacity: 0;
+}
+.terminal-line.visible { opacity: 1; }
+.terminal-prompt {
+  color: var(--amber);
+}
+.terminal-text {
+  color: var(--white);
+}
+.terminal-comment {
+  color: var(--gray);
+}
+.terminal-highlight {
+  color: var(--coral);
+  font-weight: 700;
+}
+.terminal-cursor {
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  background: var(--amber);
+  vertical-align: text-bottom;
+  animation: cursorBlink 1s infinite;
+  margin-left: 2px;
+}
+
+/* ========== SLIDE 4: CARD STACK ========== */
+.card-stack-section {
+  width: 100%;
+  max-width: 1100px;
+}
+.card-stack-title {
+  text-align: center;
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 700;
+  margin-bottom: 36px;
+}
+.card-stack-title .accent { color: var(--coral); }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.ownership-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(239,68,68,0.15);
+  border-radius: 14px;
+  padding: 24px;
+  opacity: 0;
+  transition: all 0.4s ease;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.ownership-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--coral);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.ownership-card:hover::before { opacity: 1; }
+.ownership-card:hover {
+  border-color: var(--coral);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(239,68,68,0.12);
+}
+.ownership-card.animated {
+  animation: rotateIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.card-number {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--coral);
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+.card-title-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.card-desc {
+  font-size: 13px;
+  color: var(--gray);
+  line-height: 1.5;
+}
+
+/* ========== SLIDE 5: VISION ========== */
+.vision-section {
+  text-align: center;
+  max-width: 800px;
+}
+.vision-text {
+  font-size: clamp(20px, 3vw, 36px);
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--white);
+}
+.vision-word {
+  display: inline-block;
+  opacity: 0;
+  margin: 0 4px;
+}
+.vision-word.animated {
+  animation: wordReveal 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.vision-word.emphasis {
+  color: var(--amber);
+  font-weight: 700;
+}
+.vision-word.emphasis-coral {
+  color: var(--coral);
+  font-weight: 700;
+}
+.vision-statement {
+  margin-top: 40px;
+  font-size: clamp(16px, 2vw, 22px);
+  color: var(--gray);
+  font-style: italic;
+  opacity: 0;
+}
+.vision-statement.animated {
+  animation: fadeSlideUp 0.8s ease forwards;
+}
+
+/* ========== SLIDE 6: FLIP CARDS ========== */
+.flip-section {
+  width: 100%;
+  max-width: 1100px;
+}
+.flip-section-title {
+  text-align: center;
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.flip-section-subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 32px;
+  font-family: var(--font-mono);
+}
+.flip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+.flip-card-container {
+  perspective: 1000px;
+  height: 180px;
+  cursor: pointer;
+  opacity: 0;
+}
+.flip-card-container.animated {
+  animation: scaleIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.flip-card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.flip-card.flipped {
+  transform: rotateY(180deg);
+}
+.flip-front, .flip-back {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  backface-visibility: hidden;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+.flip-front {
+  background: var(--bg-card);
+  border: 1px solid rgba(245,158,11,0.2);
+}
+.flip-front:hover {
+  border-color: var(--amber);
+}
+.flip-front-label {
+  font-size: clamp(16px, 1.5vw, 20px);
+  font-weight: 600;
+  color: var(--white);
+}
+.flip-front-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+.flip-tap-hint {
+  font-size: 11px;
+  color: var(--gray-dim);
+  margin-top: 12px;
+  font-family: var(--font-mono);
+}
+.flip-back {
+  background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(239,68,68,0.08));
+  border: 1px solid rgba(245,158,11,0.3);
+  transform: rotateY(180deg);
+}
+.flip-back-text {
+  font-size: 14px;
+  color: var(--white);
+  line-height: 1.6;
+}
+
+/* ========== SLIDE 7: STAND OUT / HOVER REVEAL ========== */
+.standout-section {
+  width: 100%;
+  max-width: 800px;
+}
+.standout-title {
+  text-align: center;
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 700;
+  margin-bottom: 36px;
+}
+.standout-title .accent { color: var(--amber); }
+.standout-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+.standout-item {
+  background: var(--bg-card);
+  border: 1px solid rgba(245,158,11,0.12);
+  border-radius: 12px;
+  padding: 20px 28px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  opacity: 0;
+  position: relative;
+  overflow: hidden;
+}
+.standout-item.animated {
+  animation: fadeSlideLeft 0.5s ease forwards;
+}
+.standout-item:hover {
+  border-color: var(--amber);
+  transform: translateX(8px);
+  box-shadow: 0 4px 24px rgba(245,158,11,0.1);
+}
+.standout-item-front {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.standout-item-front::before {
+  content: '+';
+  font-family: var(--font-mono);
+  font-size: 20px;
+  color: var(--amber);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.standout-item-detail {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.3s ease;
+  opacity: 0;
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.6;
+  padding-left: 32px;
+}
+.standout-item.expanded .standout-item-detail {
+  max-height: 100px;
+  opacity: 1;
+  margin-top: 10px;
+}
+.not-fit {
+  background: rgba(239,68,68,0.05);
+  border: 1px solid rgba(239,68,68,0.15);
+  border-radius: 12px;
+  padding: 20px 28px;
+  opacity: 0;
+}
+.not-fit.animated {
+  animation: fadeSlideUp 0.5s ease forwards;
+}
+.not-fit-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--coral-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.not-fit-text {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.5;
+}
+
+/* ========== SLIDE 8: BENEFITS ========== */
+.benefits-section {
+  width: 100%;
+  max-width: 700px;
+}
+.benefits-title {
+  text-align: center;
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+.benefits-title .accent { color: var(--amber); }
+.benefit-item {
+  margin-bottom: 28px;
+  opacity: 0;
+}
+.benefit-item.animated {
+  animation: fadeSlideUp 0.6s ease forwards;
+}
+.benefit-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.benefit-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.benefit-icon.gold {
+  background: rgba(245,158,11,0.15);
+  border: 1px solid rgba(245,158,11,0.3);
+}
+.benefit-icon.blue {
+  background: rgba(96,165,250,0.15);
+  border: 1px solid rgba(96,165,250,0.3);
+}
+.benefit-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--white);
+}
+.benefit-desc {
+  font-size: 14px;
+  color: var(--gray);
+  margin-left: 58px;
+  line-height: 1.5;
+}
+.benefit-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--gray-dim);
+  border-radius: 3px;
+  margin-left: 58px;
+  margin-top: 10px;
+  overflow: hidden;
+  max-width: 300px;
+}
+.benefit-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  width: 0%;
+  transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+}
+.benefit-bar-fill.gold { background: var(--amber); }
+.benefit-bar-fill.blue { background: #60a5fa; }
+.gold-text {
+  color: var(--amber);
+  animation: goldGlow 2s infinite;
+}
+
+/* ========== SLIDE 9: CLOSING ========== */
+.closing-section {
+  text-align: center;
+}
+.closing-question {
+  font-size: clamp(28px, 5vw, 64px);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 30px;
+}
+.closing-question .word {
+  display: inline-block;
+  opacity: 0;
+}
+.closing-question .word.animated {
+  animation: wordReveal 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.closing-cta {
+  font-family: var(--font-mono);
+  font-size: clamp(16px, 2vw, 22px);
+  color: var(--amber);
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  opacity: 0;
+}
+.closing-cta.animated {
+  animation: fadeSlideUp 0.6s ease forwards;
+}
+.closing-brand {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--gray);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-top: 30px;
+  opacity: 0;
+}
+.closing-brand.animated {
+  animation: fadeSlideUp 0.6s ease forwards;
+}
+.closing-glow-ring {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  border: 2px solid var(--amber);
+  margin: 0 auto 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: none;
+}
+.closing-glow-ring.animated {
+  animation: scaleIn 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.closing-glow-ring.pulsing {
+  animation: glowPulse 2s infinite;
+  opacity: 1;
+}
+.closing-ring-text {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--amber);
+}
+
+/* ========== MOBILE RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .slide { padding: 30px 24px; }
+  .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .stat-card { padding: 20px 14px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .flip-grid { grid-template-columns: 1fr; }
+  .flip-card-container { height: 160px; }
+  .title-meta { gap: 10px; }
+  .title-meta-item { font-size: 11px; padding: 5px 10px; }
+  .terminal-body { padding: 16px; font-size: 12px; }
+  .card-stack-section { padding: 0 4px; }
+  .nav-dots { gap: 8px; }
+  .nav-dot { width: 8px; height: 8px; }
+}
+
+@media (max-width: 480px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .stat-number { font-size: 36px; }
+  .title-letters { gap: 1px; }
+}
+
+/* ========== TOUCH SWIPE HINT ========== */
+.swipe-hint {
+  position: fixed;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gray-dim);
+  z-index: 100;
+  opacity: 0.6;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="slide-counter" id="slideCounter">01 / 09</div>
+
+<div class="nav-dots" id="navDots"></div>
+
+<div class="swipe-hint" id="swipeHint"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ===== SLIDE 1: TITLE DETONATION ===== -->
+  <div class="slide active" data-slide="0" data-particle-color="amber">
+    <div class="title-hero">
+      <div class="title-letters" id="titleLetters"></div>
+      <div class="title-brand anim-target" data-anim="fadeSlideUp" data-delay="1600">SOK</div>
+      <div class="title-subtitle anim-target" data-anim="fadeSlideUp" data-delay="2000">Build the marketing engine for Israel's fastest-growing flex office brand</div>
+      <div class="title-meta anim-target" data-anim="fadeSlideUp" data-delay="2400">
+        <span class="title-meta-item">Israel (Tel Aviv / Rishon LeZion)</span>
+        <span class="title-meta-item">Full-time / Hybrid</span>
+        <span class="title-meta-item">Start: Immediate</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 2: COUNTING DASHBOARD ===== -->
+  <div class="slide" data-slide="1" data-particle-color="amber">
+    <div class="dashboard-headline anim-target" data-anim="fadeSlideDown" data-delay="200">
+      <h2>SOK <span class="accent">by the Numbers</span></h2>
+    </div>
+    <div class="dashboard-grid">
+      <div class="stat-card anim-target" data-anim="scaleIn" data-delay="400">
+        <div class="stat-number"><span class="counter" data-target="10600">0</span><span class="stat-suffix"> sqm</span></div>
+        <div class="stat-label">Total workspace area</div>
+      </div>
+      <div class="stat-card anim-target" data-anim="scaleIn" data-delay="550">
+        <div class="stat-number"><span class="counter" data-target="1650">0</span><span class="stat-suffix"> WS</span></div>
+        <div class="stat-label">Workstations</div>
+      </div>
+      <div class="stat-card anim-target" data-anim="scaleIn" data-delay="700">
+        <div class="stat-number"><span class="counter" data-target="2">0</span><span class="stat-suffix"> locations</span></div>
+        <div class="stat-label">Tel Aviv & Rishon LeZion</div>
+      </div>
+      <div class="stat-card anim-target" data-anim="scaleIn" data-delay="850">
+        <div class="stat-number"><span class="counter" data-target="60" data-prefix="">0</span><span class="stat-suffix">+ NPS</span></div>
+        <div class="stat-label">Client satisfaction score</div>
+      </div>
+      <div class="stat-card anim-target" data-anim="scaleIn" data-delay="1000">
+        <div class="stat-number"><span class="counter" data-target="20">0</span><span class="stat-suffix">+ months</span></div>
+        <div class="stat-label">Avg contract length (+67% vs market)</div>
+      </div>
+      <div class="stat-card anim-target" data-anim="scaleIn" data-delay="1150">
+        <div class="stat-number">#<span class="counter" data-target="2">0</span> <span style="font-size:0.5em;color:var(--gray);">&</span> #<span class="counter" data-target="3">0</span></div>
+        <div class="stat-label">Among 180+ coworking spaces in Israel</div>
+      </div>
+    </div>
+    <div class="dashboard-subtext anim-target" data-anim="fadeSlideUp" data-delay="1400" style="margin-top:20px;">Small team, fast decisions, real impact</div>
+  </div>
+
+  <!-- ===== SLIDE 3: TERMINAL ===== -->
+  <div class="slide" data-slide="2" data-particle-color="coral">
+    <div class="terminal-window anim-target" data-anim="scaleIn" data-delay="200">
+      <div class="terminal-bar">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green"></div>
+        <div class="terminal-title">sok@hiring ~ % the-role</div>
+      </div>
+      <div class="terminal-body" id="terminalBody">
+        <div class="terminal-line" data-line-delay="600">
+          <span class="terminal-prompt">$ </span><span class="terminal-text">echo "We need a <span class="terminal-highlight">marketing owner</span>."</span>
+        </div>
+        <div class="terminal-line" data-line-delay="1400">
+          <span class="terminal-comment"># Not a coordinator. Not an executor.</span>
+        </div>
+        <div class="terminal-line" data-line-delay="2200">
+          <span class="terminal-comment"># An owner.</span>
+        </div>
+        <div class="terminal-line" data-line-delay="3200">
+          <span class="terminal-prompt">$ </span><span class="terminal-text">cat role.yml</span>
+        </div>
+        <div class="terminal-line" data-line-delay="4000">
+          <span class="terminal-text">strategy: <span class="terminal-highlight">ready</span></span>
+        </div>
+        <div class="terminal-line" data-line-delay="4500">
+          <span class="terminal-text">channels: <span class="terminal-highlight">ready</span></span>
+        </div>
+        <div class="terminal-line" data-line-delay="5000">
+          <span class="terminal-text">tools:    <span class="terminal-highlight">ready</span></span>
+        </div>
+        <div class="terminal-line" data-line-delay="5500">
+          <span class="terminal-text">budget:   <span class="terminal-highlight">ready</span></span>
+        </div>
+        <div class="terminal-line" data-line-delay="6300">
+          <span class="terminal-prompt">$ </span><span class="terminal-text">echo "You <span class="terminal-highlight">pick it up</span> and <span class="terminal-highlight">run</span>."</span>
+        </div>
+        <div class="terminal-line" data-line-delay="7200">
+          <span class="terminal-cursor"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 4: WHAT YOU'LL OWN ===== -->
+  <div class="slide" data-slide="3" data-particle-color="coral">
+    <div class="card-stack-section">
+      <div class="card-stack-title anim-target" data-anim="fadeSlideDown" data-delay="200">What You'll <span class="accent">Own</span></div>
+      <div class="card-grid">
+        <div class="ownership-card anim-target" data-anim="rotateIn" data-delay="400">
+          <div class="card-number">01</div>
+          <div class="card-title-text">Performance Marketing</div>
+          <div class="card-desc">Facebook & Google Ads end-to-end: budget, creative, optimization, CPL reporting</div>
+        </div>
+        <div class="ownership-card anim-target" data-anim="rotateIn" data-delay="550">
+          <div class="card-number">02</div>
+          <div class="card-title-text">Analytics Stack</div>
+          <div class="card-desc">GA4, GTM, UTM tracking — building from near-zero. You set the foundation.</div>
+        </div>
+        <div class="ownership-card anim-target" data-anim="rotateIn" data-delay="700">
+          <div class="card-number">03</div>
+          <div class="card-title-text">HubSpot Automation</div>
+          <div class="card-desc">Email sequences, lead scoring, nurturing workflows — the full CRM engine</div>
+        </div>
+        <div class="ownership-card anim-target" data-anim="rotateIn" data-delay="850">
+          <div class="card-number">04</div>
+          <div class="card-title-text">Weekly Dashboard</div>
+          <div class="card-desc">Leads, CPL, conversion by channel — weekly reporting to leadership</div>
+        </div>
+        <div class="ownership-card anim-target" data-anim="rotateIn" data-delay="1000">
+          <div class="card-number">05</div>
+          <div class="card-title-text">Content & Social</div>
+          <div class="card-desc">LinkedIn + Facebook calendar, briefs, AI-assisted production</div>
+        </div>
+        <div class="ownership-card anim-target" data-anim="rotateIn" data-delay="1150">
+          <div class="card-number">06</div>
+          <div class="card-title-text">SEO & Content Marketing</div>
+          <div class="card-desc">Pillar articles, landing pages, organic growth engine (from month 7+)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 5: VISION ===== -->
+  <div class="slide" data-slide="4" data-particle-color="amber">
+    <div class="vision-section">
+      <div class="vision-text" id="visionText"></div>
+      <div class="vision-statement anim-target" data-anim="fadeSlideUp" data-delay="4000">"That's not a wish. It's the design of this role."</div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 6: FLIP CARDS ===== -->
+  <div class="slide" data-slide="5" data-particle-color="amber">
+    <div class="flip-section">
+      <div class="flip-section-title anim-target" data-anim="fadeSlideDown" data-delay="200">Who You Are</div>
+      <div class="flip-section-subtitle anim-target" data-anim="fadeSlideUp" data-delay="400">[ CLICK TO REVEAL ]</div>
+      <div class="flip-grid" id="flipGrid">
+        <!-- Flip cards injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 7: STAND OUT ===== -->
+  <div class="slide" data-slide="6" data-particle-color="mixed">
+    <div class="standout-section">
+      <div class="standout-title anim-target" data-anim="fadeSlideDown" data-delay="200">Stand <span class="accent">Out</span> If...</div>
+      <div class="standout-items">
+        <div class="standout-item anim-target" data-anim="fadeSlideLeft" data-delay="500" onclick="this.classList.toggle('expanded')">
+          <div class="standout-item-front">Real estate, hospitality, or coworking background</div>
+          <div class="standout-item-detail">You understand the product intuitively. No learning curve on what makes a workspace work.</div>
+        </div>
+        <div class="standout-item anim-target" data-anim="fadeSlideLeft" data-delay="700" onclick="this.classList.toggle('expanded')">
+          <div class="standout-item-front">You've been a one-person marketing department</div>
+          <div class="standout-item-detail">Not part of a 15-person team. YOU were the marketing team. Strategy + execution + analytics.</div>
+        </div>
+        <div class="standout-item anim-target" data-anim="fadeSlideLeft" data-delay="900" onclick="this.classList.toggle('expanded')">
+          <div class="standout-item-front">You explain budget decisions with numbers</div>
+          <div class="standout-item-detail">Not vibes and "brand awareness." CPL, ROI, conversion data. Decisions backed by evidence.</div>
+        </div>
+      </div>
+      <div class="not-fit anim-target" data-anim="fadeSlideUp" data-delay="1200">
+        <div class="not-fit-label">Not a fit</div>
+        <div class="not-fit-text">Agency-only background, generalist freelancers, need daily direction</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 8: BENEFITS ===== -->
+  <div class="slide" data-slide="7" data-particle-color="amber">
+    <div class="benefits-section">
+      <div class="benefits-title anim-target" data-anim="fadeSlideDown" data-delay="200">What You <span class="accent">Get</span></div>
+      <div class="benefit-item anim-target" data-anim="fadeSlideUp" data-delay="500">
+        <div class="benefit-header">
+          <div class="benefit-icon gold">$</div>
+          <div class="benefit-label"><span class="gold-text">Performance Bonus</span></div>
+        </div>
+        <div class="benefit-desc">Tied to CPL/MQL targets — <strong>1-2 extra salaries per year</strong></div>
+        <div class="benefit-bar-track">
+          <div class="benefit-bar-fill gold" data-fill="85"></div>
+        </div>
+      </div>
+      <div class="benefit-item anim-target" data-anim="fadeSlideUp" data-delay="800">
+        <div class="benefit-header">
+          <div class="benefit-icon blue">&hearts;</div>
+          <div class="benefit-label">Full Benefits Package</div>
+        </div>
+        <div class="benefit-desc">Pension, SOK Employee benefits, training budget</div>
+        <div class="benefit-bar-track">
+          <div class="benefit-bar-fill blue" data-fill="100"></div>
+        </div>
+      </div>
+      <div class="benefit-item anim-target" data-anim="fadeSlideUp" data-delay="1100">
+        <div class="benefit-header">
+          <div class="benefit-icon gold">&uarr;</div>
+          <div class="benefit-label">Growth Trajectory</div>
+        </div>
+        <div class="benefit-desc">From 2 locations to 3+ in 12 months. Your scope grows with SOK.</div>
+        <div class="benefit-bar-track">
+          <div class="benefit-bar-fill gold" data-fill="70"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 9: CLOSING ===== -->
+  <div class="slide" data-slide="8" data-particle-color="amber">
+    <div class="closing-section">
+      <div class="closing-glow-ring anim-target" data-anim="scaleIn" data-delay="200">
+        <div class="closing-ring-text">S</div>
+      </div>
+      <div class="closing-question" id="closingQuestion"></div>
+      <div class="closing-cta anim-target" data-anim="fadeSlideUp" data-delay="2800">careers@sok.global</div>
+      <div class="closing-brand anim-target" data-anim="fadeSlideUp" data-delay="3200">S O K</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ==================== CONFIG ====================
+  const TOTAL_SLIDES = 9;
+  let currentSlide = 0;
+  let isTransitioning = false;
+  const TRANSITION_DURATION = 700;
+
+  // ==================== PARTICLES ====================
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let mouseX = 0, mouseY = 0;
+  let particles = [];
+  let particleColorMode = 'amber'; // 'amber', 'coral', 'mixed'
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  const PARTICLE_COUNT = 80;
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 0.5;
+      this.speedY = (Math.random() - 0.5) * 0.5;
+      this.opacity = Math.random() * 0.5 + 0.1;
+      this.baseOpacity = this.opacity;
+    }
+    update() {
+      // Mouse attraction
+      const dx = mouseX - this.x;
+      const dy = mouseY - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 200) {
+        const force = (200 - dist) / 200;
+        this.speedX += dx * force * 0.0003;
+        this.speedY += dy * force * 0.0003;
+        this.opacity = this.baseOpacity + force * 0.3;
+      } else {
+        this.opacity += (this.baseOpacity - this.opacity) * 0.02;
+      }
+
+      this.x += this.speedX;
+      this.y += this.speedY;
+      this.speedX *= 0.99;
+      this.speedY *= 0.99;
+
+      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    }
+    draw() {
+      let color;
+      if (particleColorMode === 'amber') {
+        color = `rgba(245, 158, 11, ${this.opacity})`;
+      } else if (particleColorMode === 'coral') {
+        color = `rgba(239, 68, 68, ${this.opacity})`;
+      } else {
+        color = Math.random() > 0.5
+          ? `rgba(245, 158, 11, ${this.opacity})`
+          : `rgba(239, 68, 68, ${this.opacity})`;
+      }
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push(new Particle());
+  }
+
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          const alpha = (1 - dist / 120) * 0.12;
+          let lineColor;
+          if (particleColorMode === 'amber') lineColor = `rgba(245, 158, 11, ${alpha})`;
+          else if (particleColorMode === 'coral') lineColor = `rgba(239, 68, 68, ${alpha})`;
+          else lineColor = `rgba(200, 120, 40, ${alpha})`;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = lineColor;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawConnections();
+    requestAnimationFrame(animateParticles);
+  }
+  animateParticles();
+
+  document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+  document.addEventListener('touchmove', e => {
+    if (e.touches.length) { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; }
+  }, { passive: true });
+
+  // ==================== SLIDE ENGINE ====================
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('slideCounter');
+  const navDotsContainer = document.getElementById('navDots');
+
+  // Build nav dots
+  for (let i = 0; i < TOTAL_SLIDES; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goToSlide(i));
+    navDotsContainer.appendChild(dot);
+  }
+  const dots = navDotsContainer.querySelectorAll('.nav-dot');
+
+  function updateCounter() {
+    const num = String(currentSlide + 1).padStart(2, '0');
+    counter.textContent = `${num} / ${String(TOTAL_SLIDES).padStart(2, '0')}`;
+  }
+
+  function updateDots() {
+    dots.forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  }
+
+  function setParticleColor(slideEl) {
+    const mode = slideEl.getAttribute('data-particle-color') || 'amber';
+    particleColorMode = mode;
+  }
+
+  function goToSlide(index, direction) {
+    if (index === currentSlide || isTransitioning || index < 0 || index >= TOTAL_SLIDES) return;
+    isTransitioning = true;
+    const dir = direction || (index > currentSlide ? 'right' : 'left');
+
+    const oldSlide = slides[currentSlide];
+    const newSlide = slides[index];
+
+    // Reset animations on the new slide
+    resetSlideAnimations(newSlide);
+
+    // Exit old slide
+    oldSlide.style.transition = `all ${TRANSITION_DURATION}ms cubic-bezier(0.4,0,0.2,1)`;
+    oldSlide.classList.remove('active');
+    oldSlide.classList.add(dir === 'right' ? 'exit-left' : 'exit-right');
+
+    // Enter new slide
+    newSlide.classList.add(dir === 'right' ? 'enter-right' : 'enter-left');
+    newSlide.style.transition = 'none';
+    newSlide.style.visibility = 'visible';
+    newSlide.style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        newSlide.style.transition = `all ${TRANSITION_DURATION}ms cubic-bezier(0.4,0,0.2,1)`;
+        newSlide.classList.remove('enter-right', 'enter-left');
+        newSlide.classList.add('active');
+        newSlide.style.opacity = '';
+      });
+    });
+
+    currentSlide = index;
+    updateCounter();
+    updateDots();
+    setParticleColor(newSlide);
+
+    // Trigger entrance animations
+    setTimeout(() => triggerSlideAnimations(newSlide), 100);
+
+    setTimeout(() => {
+      oldSlide.classList.remove('exit-left', 'exit-right');
+      oldSlide.style.transition = '';
+      oldSlide.style.visibility = '';
+      oldSlide.style.opacity = '';
+      isTransitioning = false;
+    }, TRANSITION_DURATION + 50);
+  }
+
+  function nextSlide() { goToSlide(currentSlide + 1, 'right'); }
+  function prevSlide() { goToSlide(currentSlide - 1, 'left'); }
+
+  // ==================== ENTRANCE ANIMATIONS ====================
+  function resetSlideAnimations(slide) {
+    slide.querySelectorAll('.anim-target').forEach(el => {
+      el.classList.remove('animated');
+      el.style.animation = '';
+      el.style.opacity = '0';
+    });
+    // Reset counters
+    slide.querySelectorAll('.counter').forEach(c => { c.textContent = '0'; c._counted = false; });
+    // Reset terminal
+    if (slide.dataset.slide === '2') {
+      slide.querySelectorAll('.terminal-line').forEach(l => l.classList.remove('visible'));
+    }
+    // Reset benefit bars
+    slide.querySelectorAll('.benefit-bar-fill').forEach(b => { b.style.width = '0%'; });
+  }
+
+  function triggerSlideAnimations(slide) {
+    const targets = slide.querySelectorAll('.anim-target');
+    targets.forEach(el => {
+      const delay = parseInt(el.dataset.delay) || 0;
+      const animName = el.dataset.anim || 'fadeSlideUp';
+      setTimeout(() => {
+        el.style.animation = `${animName} 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards`;
+        el.classList.add('animated');
+      }, delay);
+    });
+
+    // Trigger counters
+    const slideIndex = parseInt(slide.dataset.slide);
+    if (slideIndex === 1) {
+      setTimeout(() => {
+        slide.querySelectorAll('.counter').forEach(c => {
+          if (!c._counted) { animateCounter(c); c._counted = true; }
+        });
+      }, 600);
+    }
+
+    // Trigger terminal
+    if (slideIndex === 2) {
+      const lines = slide.querySelectorAll('.terminal-line');
+      lines.forEach(line => {
+        const d = parseInt(line.dataset.lineDelay) || 0;
+        setTimeout(() => line.classList.add('visible'), d);
+      });
+    }
+
+    // Trigger vision words
+    if (slideIndex === 4) {
+      buildVisionWords();
+    }
+
+    // Trigger closing words
+    if (slideIndex === 8) {
+      buildClosingWords();
+      setTimeout(() => {
+        const ring = slide.querySelector('.closing-glow-ring');
+        if (ring) ring.classList.add('pulsing');
+      }, 1200);
+    }
+
+    // Trigger benefit bars
+    if (slideIndex === 7) {
+      setTimeout(() => {
+        slide.querySelectorAll('.benefit-bar-fill').forEach(bar => {
+          const fill = bar.dataset.fill || 100;
+          bar.style.width = fill + '%';
+        });
+      }, 1200);
+    }
+  }
+
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const duration = 1800;
+    const start = performance.now();
+    function step(ts) {
+      const progress = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * eased).toLocaleString();
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ==================== VISION WORDS BUILD ====================
+  const visionSentences = [
+    { text: "By month 12 —", emphasis: false },
+    { text: "you run marketing for up to", emphasis: false },
+    { text: "3 locations", emphasis: 'amber' },
+    { text: "using", emphasis: false },
+    { text: "AI and automation.", emphasis: 'coral' },
+  ];
+
+  function buildVisionWords() {
+    const container = document.getElementById('visionText');
+    container.innerHTML = '';
+    let wordIndex = 0;
+    visionSentences.forEach(segment => {
+      const words = segment.text.split(' ');
+      words.forEach(word => {
+        const span = document.createElement('span');
+        span.className = 'vision-word';
+        if (segment.emphasis === 'amber') span.classList.add('emphasis');
+        if (segment.emphasis === 'coral') span.classList.add('emphasis-coral');
+        span.textContent = word + ' ';
+        container.appendChild(span);
+        const delay = 400 + wordIndex * 200;
+        setTimeout(() => span.classList.add('animated'), delay);
+        wordIndex++;
+      });
+    });
+  }
+
+  // ==================== CLOSING WORDS BUILD ====================
+  function buildClosingWords() {
+    const container = document.getElementById('closingQuestion');
+    container.innerHTML = '';
+    const words = ['Ready', 'to', 'build', 'something', 'real?'];
+    words.forEach((word, i) => {
+      const span = document.createElement('span');
+      span.className = 'word';
+      span.textContent = word + ' ';
+      if (word === 'real?') span.style.color = 'var(--amber)';
+      container.appendChild(span);
+      setTimeout(() => span.classList.add('animated'), 600 + i * 250);
+    });
+  }
+
+  // ==================== FLIP CARDS ====================
+  const flipData = [
+    { front: 'Performance Marketing', icon: '&#9733;', back: '3-5 years B2C &mdash; hands on keyboard, not through an agency' },
+    { front: 'HubSpot Power User', icon: '&#9881;', back: "You've built real workflows, not just stored contacts" },
+    { front: 'Analytics Native', icon: '&#9783;', back: 'GA4, GTM, UTM, attribution &mdash; setup and decision-making' },
+    { front: 'Bilingual', icon: '&#9998;', back: 'Hebrew (ad copy, landing pages) + strong English (reporting, B2B content)' },
+    { front: 'AI-Native Workflow', icon: '&#9889;', back: 'You use AI daily for content, research, optimization. We expect 2-3x output. Not optional.' },
+  ];
+
+  const flipGrid = document.getElementById('flipGrid');
+  flipData.forEach((card, i) => {
+    const container = document.createElement('div');
+    container.className = 'flip-card-container anim-target';
+    container.dataset.anim = 'scaleIn';
+    container.dataset.delay = String(500 + i * 150);
+    container.innerHTML = `
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-front">
+          <div class="flip-front-icon">${card.icon}</div>
+          <div class="flip-front-label">${card.front}</div>
+          <div class="flip-tap-hint">TAP TO REVEAL</div>
+        </div>
+        <div class="flip-back">
+          <div class="flip-back-text">${card.back}</div>
+        </div>
+      </div>
+    `;
+    flipGrid.appendChild(container);
+  });
+
+  // ==================== TITLE LETTERS ====================
+  const titleText = 'MARKETING MANAGER';
+  const titleContainer = document.getElementById('titleLetters');
+  titleText.split('').forEach((char, i) => {
+    const span = document.createElement('span');
+    span.className = 'title-letter' + (char === ' ' ? ' space' : '');
+    span.textContent = char === ' ' ? '' : char;
+    titleContainer.appendChild(span);
+  });
+
+  function animateTitle() {
+    const letters = titleContainer.querySelectorAll('.title-letter');
+    letters.forEach((letter, i) => {
+      setTimeout(() => letter.classList.add('animated'), 100 + i * 65);
+    });
+  }
+
+  // ==================== KEYBOARD NAV ====================
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      nextSlide();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      prevSlide();
+    }
+  });
+
+  // ==================== TOUCH SWIPE ====================
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) nextSlide(); else prevSlide();
+    }
+  }, { passive: true });
+
+  // ==================== MOUSE WHEEL ====================
+  let wheelTimeout = false;
+  document.addEventListener('wheel', e => {
+    if (wheelTimeout) return;
+    wheelTimeout = true;
+    if (e.deltaY > 0) nextSlide(); else prevSlide();
+    setTimeout(() => { wheelTimeout = false; }, 800);
+  }, { passive: true });
+
+  // ==================== SWIPE HINT (MOBILE) ====================
+  const swipeHint = document.getElementById('swipeHint');
+  if ('ontouchstart' in window) {
+    swipeHint.textContent = 'SWIPE TO NAVIGATE';
+    setTimeout(() => { swipeHint.style.opacity = '0'; }, 4000);
+  }
+
+  // ==================== INIT ====================
+  updateCounter();
+  setParticleColor(slides[0]);
+
+  // Animate first slide
+  setTimeout(() => {
+    animateTitle();
+    triggerSlideAnimations(slides[0]);
+  }, 300);
+
+})();
+</script>
+</body>
+</html>
