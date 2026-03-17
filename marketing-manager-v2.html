@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marketing Manager — S.O.K.</title>
+<title>Marketing Manager — SOK</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800;9..40,900;9..40,1000&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap');
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -229,17 +229,21 @@ canvas#particles {
 .title-heading.animated {
   animation: titleFadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
-.title-brand {
-  font-family: var(--font-mono);
-  font-size: clamp(18px, 2.5vw, 28px);
-  font-weight: 500;
-  color: var(--accent-light);
-  letter-spacing: 8px;
+.sok-logo {
+  font-family: var(--font-display);
+  font-weight: 1000;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
-  margin-bottom: 16px;
+  line-height: 1;
+}
+.title-brand {
+  font-size: clamp(32px, 4.5vw, 56px);
+  color: var(--white);
+  margin-bottom: 20px;
+  opacity: 0;
 }
 .title-brand.animated {
-  animation: subtleGlow 3s infinite, titleFadeIn 0.8s ease forwards;
+  animation: titleFadeIn 0.8s ease forwards;
 }
 .title-subtitle {
   font-family: var(--font-body);
@@ -799,52 +803,52 @@ canvas#particles {
 .closing-question .word.animated {
   animation: wordReveal 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
 }
-.closing-cta {
-  font-family: var(--font-mono);
-  font-size: clamp(16px, 2vw, 22px);
-  color: var(--accent-light);
-  letter-spacing: 3px;
-  margin-bottom: 20px;
-  opacity: 0;
-}
-.closing-cta.animated {
-  animation: fadeSlideUp 0.6s ease forwards;
-}
 .closing-brand {
-  font-family: var(--font-mono);
-  font-size: 16px;
-  color: var(--gray);
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  margin-top: 30px;
+  margin: 0 auto 32px;
   opacity: 0;
 }
 .closing-brand.animated {
   animation: fadeSlideUp 0.6s ease forwards;
 }
-.closing-glow-ring {
-  width: 120px; height: 120px;
-  border-radius: 50%;
-  border: 2px solid var(--accent);
-  margin: 0 auto 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  animation: none;
+.closing-brand .sok-logo {
+  font-size: clamp(48px, 7vw, 80px);
+  color: var(--white);
 }
-.closing-glow-ring.animated {
-  animation: scaleIn 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards;
-}
-.closing-glow-ring.pulsing {
-  animation: glowPulse 2s infinite;
-  opacity: 1;
-}
-.closing-ring-text {
-  font-family: var(--font-mono);
-  font-size: 28px;
+.closing-apply-btn {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2vw, 22px);
   font-weight: 700;
-  color: var(--accent-light);
+  color: var(--white);
+  background: var(--accent);
+  border: none;
+  padding: 16px 48px;
+  border-radius: 6px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+.closing-apply-btn.animated {
+  animation: fadeSlideUp 0.6s ease forwards;
+}
+.closing-apply-btn:hover {
+  background: var(--accent-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 53, 148, 0.4);
+}
+.closing-email {
+  font-family: var(--font-mono);
+  font-size: clamp(13px, 1.5vw, 17px);
+  color: var(--gray);
+  margin-top: 20px;
+  letter-spacing: 1px;
+  opacity: 0;
+}
+.closing-email.animated {
+  animation: fadeSlideUp 0.6s ease forwards;
 }
 
 /* ========== MOBILE RESPONSIVE ========== */
@@ -899,7 +903,7 @@ canvas#particles {
   <!-- ===== SLIDE 1: TITLE ===== -->
   <div class="slide active" data-slide="0" data-particle-color="blue">
     <div class="title-hero">
-      <div class="title-brand anim-target" data-anim="titleFadeIn" data-delay="200">S.O.K.</div>
+      <div class="title-brand sok-logo anim-target" data-anim="titleFadeIn" data-delay="200">SOK</div>
       <div class="title-heading anim-target" data-anim="titleFadeIn" data-delay="600" id="titleHeading">Marketing Manager</div>
       <div class="title-subtitle anim-target" data-anim="fadeSlideUp" data-delay="1400">Build the marketing engine for Israel's fastest-growing flex office brand</div>
       <div class="title-meta anim-target" data-anim="fadeSlideUp" data-delay="1800">
@@ -913,7 +917,7 @@ canvas#particles {
   <!-- ===== SLIDE 2: COUNTING DASHBOARD ===== -->
   <div class="slide" data-slide="1" data-particle-color="blue">
     <div class="dashboard-headline anim-target" data-anim="fadeSlideDown" data-delay="200">
-      <h2>S.O.K. <span class="accent">by the Numbers</span></h2>
+      <h2><span class="sok-logo" style="font-size: inherit;">SOK</span> <span class="accent">by the Numbers</span></h2>
     </div>
     <div class="dashboard-grid">
       <div class="stat-card anim-target" data-anim="scaleIn" data-delay="400">
@@ -1111,12 +1115,12 @@ canvas#particles {
   <!-- ===== SLIDE 9: CLOSING ===== -->
   <div class="slide" data-slide="8" data-particle-color="blue">
     <div class="closing-section">
-      <div class="closing-glow-ring anim-target" data-anim="scaleIn" data-delay="200">
-        <div class="closing-ring-text">S</div>
+      <div class="closing-brand anim-target" data-anim="fadeSlideUp" data-delay="200">
+        <span class="sok-logo">SOK</span>
       </div>
       <div class="closing-question" id="closingQuestion"></div>
-      <div class="closing-cta anim-target" data-anim="fadeSlideUp" data-delay="2800">careers@sok.global</div>
-      <div class="closing-brand anim-target" data-anim="fadeSlideUp" data-delay="3200">S . O . K .</div>
+      <a href="mailto:ba@sok.works" class="closing-apply-btn anim-target" data-anim="fadeSlideUp" data-delay="2800">Apply</a>
+      <div class="closing-email anim-target" data-anim="fadeSlideUp" data-delay="3200">ba@sok.works</div>
     </div>
   </div>
 
@@ -1369,10 +1373,6 @@ canvas#particles {
     // Trigger closing words
     if (slideIndex === 8) {
       buildClosingWords();
-      setTimeout(() => {
-        const ring = slide.querySelector('.closing-glow-ring');
-        if (ring) ring.classList.add('pulsing');
-      }, 1200);
     }
 
     // Trigger benefit bars
