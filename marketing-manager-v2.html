@@ -853,23 +853,55 @@ canvas#particles {
 
 /* ========== MOBILE RESPONSIVE ========== */
 @media (max-width: 768px) {
-  .slide { padding: 30px 24px; }
+  .slide { padding: 30px 24px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .stat-card { padding: 20px 14px; }
-  .card-grid { grid-template-columns: 1fr; }
-  .flip-grid { grid-template-columns: 1fr; }
-  .flip-card-container { height: 160px; }
-  .title-meta { gap: 10px; }
+  .card-grid { grid-template-columns: 1fr; max-height: 70vh; overflow-y: auto; }
+  .flip-grid { grid-template-columns: 1fr; max-height: 65vh; overflow-y: auto; }
+  .flip-card-container { height: 140px; }
+  .title-meta { gap: 8px; flex-wrap: wrap; justify-content: center; }
   .title-meta-item { font-size: 11px; padding: 5px 10px; }
   .terminal-body { padding: 16px; font-size: 12px; }
+  .terminal-window { max-height: 75vh; overflow-y: auto; }
   .card-stack-section { padding: 0 4px; }
   .nav-dots { gap: 8px; }
   .nav-dot { width: 8px; height: 8px; }
+  .title-brand { font-size: clamp(28px, 8vw, 42px) !important; }
+  .title-heading { font-size: clamp(30px, 9vw, 52px) !important; }
+  .closing-brand .sok-logo { font-size: clamp(40px, 12vw, 60px) !important; }
+  .closing-apply-btn { padding: 14px 40px; font-size: 16px; min-height: 48px; }
+  .closing-question { font-size: clamp(22px, 6vw, 36px) !important; margin-bottom: 20px; }
+  .closing-email { font-size: 14px; }
+  .standout-item { min-height: 48px; }
+  .benefits-section { max-height: 80vh; overflow-y: auto; }
+  .vision-text { font-size: clamp(22px, 5vw, 36px) !important; }
 }
 
 @media (max-width: 480px) {
-  .dashboard-grid { grid-template-columns: 1fr; }
-  .stat-number { font-size: 36px; }
+  .slide { padding: 20px 16px; }
+  .dashboard-grid { grid-template-columns: 1fr; max-height: 70vh; overflow-y: auto; }
+  .stat-number { font-size: 32px; }
+  .stat-card { padding: 16px 12px; }
+  .title-brand { font-size: 26px !important; margin-bottom: 12px; }
+  .title-heading { font-size: 28px !important; }
+  .title-subtitle { font-size: 14px !important; }
+  .title-meta-item { font-size: 10px; padding: 4px 8px; }
+  .closing-apply-btn { padding: 14px 36px; font-size: 15px; }
+  .flip-card-container { height: 130px; }
+  .ownership-card { padding: 16px; }
+  .card-number { font-size: 12px; }
+  .card-title-text { font-size: 15px; }
+  .card-desc { font-size: 12px; }
+  .terminal-body { font-size: 11px; padding: 12px; }
+}
+
+@media (max-height: 600px) {
+  .slide { padding: 16px 20px; }
+  .title-brand { font-size: 22px !important; margin-bottom: 8px; }
+  .title-heading { font-size: 28px !important; }
+  .closing-brand .sok-logo { font-size: 36px !important; }
+  .closing-brand { margin-bottom: 16px; }
+  .closing-question { font-size: 24px !important; margin-bottom: 16px; }
 }
 
 /* ========== TOUCH SWIPE HINT ========== */
@@ -1150,7 +1182,8 @@ canvas#particles {
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
-  const PARTICLE_COUNT = 80;
+  const isMobile = window.innerWidth <= 768;
+  const PARTICLE_COUNT = isMobile ? 35 : 80;
 
   class Particle {
     constructor() {
@@ -1229,7 +1262,7 @@ canvas#particles {
   function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     particles.forEach(p => { p.update(); p.draw(); });
-    drawConnections();
+    if (!isMobile) drawConnections();
     requestAnimationFrame(animateParticles);
   }
   animateParticles();
