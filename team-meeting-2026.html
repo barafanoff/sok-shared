@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOK — Annual Team Meeting · 27 April 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #07091a;
+  --bg-2: #0c1230;
+  --card-bg: rgba(255,255,255,0.035);
+  --card-bg-strong: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.09);
+  --text: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --primary: #3b82f6;
+  --primary-bright: #60a5fa;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --purple: #a855f7;
+  --cyan: #06b6d4;
+  --orange: #f97316;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Animated background ── */
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+}
+.bg-blob.b1 { width: 700px; height: 700px; top: -200px; left: -200px;
+  background: radial-gradient(circle, rgba(59,130,246,0.55), transparent 65%);
+  animation: drift1 28s ease-in-out infinite alternate; }
+.bg-blob.b2 { width: 600px; height: 600px; top: 30%; right: -180px;
+  background: radial-gradient(circle, rgba(168,85,247,0.4), transparent 65%);
+  animation: drift2 34s ease-in-out infinite alternate; }
+.bg-blob.b3 { width: 540px; height: 540px; bottom: -160px; left: 30%;
+  background: radial-gradient(circle, rgba(16,185,129,0.35), transparent 65%);
+  animation: drift3 40s ease-in-out infinite alternate; }
+.bg-blob.b4 { width: 480px; height: 480px; top: 5%; right: 20%;
+  background: radial-gradient(circle, rgba(6,182,212,0.3), transparent 65%);
+  animation: drift4 32s ease-in-out infinite alternate; }
+.bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(148,163,184,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at 50% 40%, #000 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 30%, transparent 80%);
+}
+
+@keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(120px, 90px) scale(1.15); } }
+@keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-90px, 120px) scale(1.1); } }
+@keyframes drift3 { from { transform: translate(0,0) scale(1); } to { transform: translate(80px, -100px) scale(1.12); } }
+@keyframes drift4 { from { transform: translate(0,0) scale(1); } to { transform: translate(-60px, 80px) scale(1.08); } }
+
+/* ── Slides container ── */
+.slides-container {
+  position: relative;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100vh;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.slide-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 56px 28px 44px;
+}
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-track { background: transparent; }
+.slide::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.2); border-radius: 4px; }
+.slide::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.35); }
+
+/* ── Brand ── */
+.brand {
+  position: fixed;
+  top: 20px; left: 28px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--primary-bright);
+  letter-spacing: 2px;
+  z-index: 200;
+  user-select: none;
+  text-shadow: 0 0 24px rgba(96,165,250,0.4);
+}
+.date-tag {
+  position: fixed;
+  top: 22px; left: 78px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  z-index: 200;
+}
+
+/* ── Nav ── */
+.nav-dots {
+  position: fixed;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  z-index: 200;
+}
+.nav-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: rgba(148,163,184,0.35);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 0;
+}
+.nav-dot.active {
+  background: var(--primary-bright);
+  transform: scale(1.5);
+  box-shadow: 0 0 12px rgba(96,165,250,0.7);
+}
+.nav-dot:hover { background: var(--primary); }
+
+.slide-counter {
+  position: fixed;
+  bottom: 18px; right: 28px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+  z-index: 200;
+}
+
+/* ── Typography ── */
+.slide-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 18px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+.slide-title .accent { color: var(--primary-bright); }
+.slide-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2.4px;
+  color: var(--primary-bright);
+  margin-bottom: 10px;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--primary);
+  backdrop-filter: blur(8px);
+}
+.card.green { border-left-color: var(--green); }
+.card.red { border-left-color: var(--red); }
+.card.amber { border-left-color: var(--amber); }
+.card.purple { border-left-color: var(--purple); }
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.card-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.2;
+}
+.card-value.sm { font-size: 18px; }
+.card-delta {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.card-delta.green { color: var(--green); }
+.card-delta.red { color: var(--red); }
+.card ul { list-style: none; padding: 0; margin: 0; }
+.card ul li {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  padding: 2.5px 0;
+  line-height: 1.45;
+}
+.card ul li::before {
+  content: "\2192\0020";
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* ── Badges ── */
+.badges-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  border: 1px solid transparent;
+}
+.badge.green { background: rgba(16,185,129,0.12); color: var(--green); border-color: rgba(16,185,129,0.3); }
+.badge.red { background: rgba(239,68,68,0.12); color: var(--red); border-color: rgba(239,68,68,0.3); }
+
+/* ── Layout helpers ── */
+.flex-row { display: flex; gap: 18px; }
+.flex-col { display: flex; flex-direction: column; gap: 10px; }
+.w-48 { width: 48%; flex-shrink: 0; }
+.w-42 { width: 42%; flex-shrink: 0; }
+.w-58 { width: 58%; flex-shrink: 0; }
+.w-52 { width: 52%; flex-shrink: 0; }
+.grid-2x3 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+.chart-wrap { position: relative; width: 100%; }
+
+/* ── Benchmark callouts ── */
+.benchmark-callouts {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.callout-chip {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  border: 1px solid transparent;
+}
+.callout-chip.green { background: rgba(16,185,129,0.14); color: var(--green); border-color: rgba(16,185,129,0.3); }
+
+/* ── Summary bar ── */
+.summary-bar {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 13px 18px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+  backdrop-filter: blur(8px);
+}
+.summary-bar strong { color: var(--text); }
+
+/* ── Trophy badge ── */
+.trophy-badge {
+  background: linear-gradient(135deg, rgba(245,158,11,0.16), rgba(245,158,11,0.05));
+  border: 1px solid rgba(245,158,11,0.4);
+  border-radius: 10px;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ── Mini timeline ── */
+.mini-timeline {
+  position: relative;
+  height: 56px;
+  margin: 0 10px;
+}
+.mini-timeline .timeline-line {
+  position: absolute;
+  top: 28px; left: 0; right: 0;
+  height: 2px;
+  background: rgba(148,163,184,0.18);
+}
+.mini-timeline .timeline-zone {
+  position: absolute;
+  top: 24px;
+  height: 10px;
+  background: rgba(239,68,68,0.18);
+  border-radius: 5px;
+}
+.mini-timeline .timeline-dot {
+  position: absolute;
+  top: 24px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  transform: translateX(-4px);
+  z-index: 2;
+  box-shadow: 0 0 8px currentColor;
+}
+.mini-timeline .timeline-dot.blue { background: var(--primary); color: var(--primary); }
+.mini-timeline .timeline-dot.red { background: var(--red); color: var(--red); }
+.mini-timeline .timeline-year {
+  position: absolute;
+  top: 38px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+  transform: translateX(-50%);
+  font-weight: 500;
+}
+.mini-timeline .timeline-label {
+  position: absolute;
+  font-size: 9.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  line-height: 1.2;
+  color: var(--text-secondary);
+}
+.mini-timeline .timeline-label.above { top: 2px; }
+.mini-timeline .timeline-label.above-2 { top: 14px; }
+.mini-timeline .timeline-label.below { top: 42px; }
+
+/* ── Deal entries ── */
+.deal-entry {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.deal-entry:last-child { border-bottom: none; }
+.deal-entry strong { color: var(--text); font-weight: 600; }
+.deal-entry .deal-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ── Section header ── */
+.section-header {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--primary);
+}
+.section-header.green { border-left-color: var(--green); }
+
+/* ── Slide 1: Welcome ── */
+.welcome-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px);
+}
+.welcome-hero {
+  text-align: center;
+  padding: 12px 0 28px;
+}
+.welcome-hero.centered {
+  padding: 0;
+  max-width: 880px;
+}
+.welcome-title.xl {
+  font-size: 84px;
+  margin-bottom: 22px;
+}
+.welcome-only .welcome-sub { font-size: 18px; max-width: 760px; }
+.welcome-only .welcome-thanks { font-size: 15px; margin-top: 28px; }
+.welcome-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--primary-bright);
+  margin-bottom: 14px;
+}
+.welcome-title {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1.05;
+  margin-bottom: 14px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #93c5fd 60%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.welcome-sub {
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.55;
+}
+.welcome-thanks {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wins-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+.win-card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px 14px;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.win-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 0% 0%, var(--accent-color, var(--primary)) 0%, transparent 60%);
+  opacity: 0.12;
+  pointer-events: none;
+}
+.win-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.18); }
+.win-icon {
+  font-size: 20px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 8px rgba(96,165,250,0.4));
+}
+.win-headline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent-color, var(--primary-bright));
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.win-sub {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  font-weight: 500;
+}
+.win-card.amber { --accent-color: var(--amber); }
+.win-card.green { --accent-color: var(--green); }
+.win-card.blue { --accent-color: var(--primary-bright); }
+.win-card.purple { --accent-color: var(--purple); }
+.win-card.cyan { --accent-color: var(--cyan); }
+.win-card.full {
+  grid-column: span 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 16px;
+  text-align: center;
+}
+.win-card.full .win-headline { font-size: 18px; margin: 0; }
+.win-card.full .win-sub { margin: 0; }
+
+/* ── Slide 5: Strategy ── */
+.strategy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.pillar-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 18px 18px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+.pillar-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-color), transparent);
+}
+.pillar-card.productivity { --accent-color: var(--primary-bright); }
+.pillar-card.flexibility { --accent-color: var(--green); }
+.pillar-card.business { --accent-color: var(--amber); }
+.pillar-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-color);
+  margin-bottom: 6px;
+  letter-spacing: 1.5px;
+}
+.pillar-name {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+}
+.pillar-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.priorities-section {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 18px 22px;
+  backdrop-filter: blur(8px);
+  margin-bottom: 14px;
+}
+.priorities-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--primary-bright);
+  margin-bottom: 14px;
+}
+.priorities-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+.priority-item {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+.priority-item.hero {
+  background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(168,85,247,0.1));
+  border: 1px solid rgba(96,165,250,0.4);
+  box-shadow: 0 0 24px rgba(59,130,246,0.15);
+}
+.priority-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+}
+.priority-item.hero .priority-tag { color: var(--primary-bright); }
+.priority-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+.priority-item.hero .priority-name { font-size: 17px; }
+.priority-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.northstar-bar {
+  background: linear-gradient(90deg, rgba(168,85,247,0.1), rgba(59,130,246,0.05));
+  border: 1px dashed rgba(168,85,247,0.4);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.4;
+}
+.northstar-icon { font-size: 17px; filter: drop-shadow(0 0 6px rgba(168,85,247,0.6)); }
+.northstar-bar strong { color: var(--text); }
+
+/* ── Slide 6: Org structure ── */
+.org-title {
+  font-size: 26px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, #f1f5f9, #93c5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.org-sub {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.org-top {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.2fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.org-ceo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.ceo-card {
+  background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(168,85,247,0.15));
+  border: 1.5px solid rgba(96,165,250,0.6);
+  border-radius: 14px;
+  padding: 14px 32px;
+  text-align: center;
+  box-shadow: 0 0 32px rgba(59,130,246,0.25);
+  backdrop-filter: blur(10px);
+}
+.ceo-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.ceo-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--primary-bright);
+  letter-spacing: 1.5px;
+  margin-top: 2px;
+}
+
+.org-bottom {
+  display: grid;
+  grid-template-columns: 1.2fr 1.4fr 0.8fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.dept {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-top: 3px solid var(--dept-color, var(--primary));
+  border-radius: 10px;
+  padding: 12px 14px;
+  backdrop-filter: blur(8px);
+}
+.dept.support     { --dept-color: var(--orange); }
+.dept.finance     { --dept-color: var(--amber); }
+.dept.legal       { --dept-color: var(--amber); }
+.dept.operation   { --dept-color: var(--green); }
+.dept.sales       { --dept-color: var(--purple); }
+.dept.construction{ --dept-color: var(--cyan); }
+.dept-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: var(--dept-color);
+  margin-bottom: 8px;
+}
+.person {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  line-height: 1.3;
+}
+.person + .person { border-top: 1px dashed rgba(255,255,255,0.05); margin-top: 3px; padding-top: 6px; }
+.person-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+.person-role {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.3px;
+}
+.person.lead .person-name { color: var(--dept-color); }
+.person.vacancy .person-name { color: var(--red); }
+.person.vacancy .person-role { color: rgba(239,68,68,0.7); }
+.person-sub {
+  margin-left: 12px;
+  padding-left: 10px;
+  border-left: 2px solid var(--dept-color);
+  margin-top: 4px;
+  opacity: 0.92;
+}
+.person-sub .person { padding: 3px 0; }
+.person-sub .person + .person { border-top: none; margin-top: 0; padding-top: 3px; }
+.person-sub .person-name { font-size: 11.5px; font-weight: 500; }
+.person-sub .person-role { font-size: 10px; }
+
+/* ── Animations ── */
+.animate-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.slide.active .animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.slide.active .animate-in:nth-child(1) { transition-delay: 0.05s; }
+.slide.active .animate-in:nth-child(2) { transition-delay: 0.10s; }
+.slide.active .animate-in:nth-child(3) { transition-delay: 0.15s; }
+.slide.active .animate-in:nth-child(4) { transition-delay: 0.20s; }
+.slide.active .animate-in:nth-child(5) { transition-delay: 0.25s; }
+.slide.active .animate-in:nth-child(6) { transition-delay: 0.30s; }
+.slide.active .animate-in:nth-child(7) { transition-delay: 0.35s; }
+.slide.active .animate-in:nth-child(8) { transition-delay: 0.40s; }
+
+.win-card.animate-in { transition-delay: calc(var(--i, 0) * 0.06s + 0.2s) !important; }
+
+@media print {
+  html, body { overflow: visible; height: auto; background: var(--bg); }
+  .slide { position: relative; opacity: 1; transform: none; pointer-events: auto; page-break-after: always; height: auto; min-height: 100vh; }
+  .nav-dots, .slide-counter, .brand, .date-tag, .bg-canvas { display: none; }
+  .animate-in { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Animated background -->
+<div class="bg-canvas">
+  <div class="bg-grid"></div>
+  <div class="bg-blob b1"></div>
+  <div class="bg-blob b2"></div>
+  <div class="bg-blob b3"></div>
+  <div class="bg-blob b4"></div>
+</div>
+
+<!-- Brand -->
+<div class="brand">SOK</div>
+<div class="date-tag">27 APR 2026</div>
+
+<!-- Nav dots -->
+<div class="nav-dots">
+  <button class="nav-dot active" data-slide="0"></button>
+  <button class="nav-dot" data-slide="1"></button>
+  <button class="nav-dot" data-slide="2"></button>
+  <button class="nav-dot" data-slide="3"></button>
+  <button class="nav-dot" data-slide="4"></button>
+  <button class="nav-dot" data-slide="5"></button>
+  <button class="nav-dot" data-slide="6"></button>
+</div>
+
+<div class="slide-counter">1 / 7</div>
+
+<div class="slides-container">
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SLIDE 1: Welcome (intro only)
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="slide active" id="slide-0">
+<div class="slide-inner welcome-only">
+  <div class="welcome-hero centered">
+    <div class="welcome-eyebrow animate-in">Annual Team Meeting · 27 April 2026</div>
+    <h1 class="welcome-title xl animate-in">From 2025 to 2026</h1>
+    <p class="welcome-sub animate-in">A year delayed by war — but never paused. Today we look at what we built in 2025 and where we are heading in 2026.</p>
+    <p class="welcome-thanks animate-in">Thank you to every person in this room. What follows is yours.</p>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SLIDE 2: 2025 Wins
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-wins">
+<div class="slide-inner">
+  <div class="animate-in">
+    <div class="slide-eyebrow">Things we are proud of</div>
+    <div class="slide-title">2025 <span class="accent">Wins</span></div>
+  </div>
+
+  <div class="wins-grid">
+    <div class="win-card amber animate-in" style="--i:0">
+      <div class="win-icon">🏆</div>
+      <div class="win-headline">#2 &amp; #3</div>
+      <div class="win-sub">SpaceCenter Awards 2025 — among 180+ flex spaces in Israel</div>
+    </div>
+    <div class="win-card blue animate-in" style="--i:1">
+      <div class="win-icon">🎯</div>
+      <div class="win-headline">100%</div>
+      <div class="win-sub">Tel Aviv occupancy — every single month of 2025</div>
+    </div>
+    <div class="win-card green animate-in" style="--i:2">
+      <div class="win-icon">📈</div>
+      <div class="win-headline">+38%</div>
+      <div class="win-sub">Revenue growth year-over-year</div>
+    </div>
+    <div class="win-card purple animate-in" style="--i:3">
+      <div class="win-icon">🚀</div>
+      <div class="win-headline">+3,000 m²</div>
+      <div class="win-sub">Rishon LeZion Phase 2 — launched April 2025</div>
+    </div>
+    <div class="win-card blue animate-in" style="--i:4">
+      <div class="win-icon">⭐</div>
+      <div class="win-headline">NPS 60+ · SLA 92%</div>
+      <div class="win-sub">Service quality the only Israeli operator publishes</div>
+    </div>
+    <div class="win-card green animate-in" style="--i:5">
+      <div class="win-icon">🤝</div>
+      <div class="win-headline">20+ months</div>
+      <div class="win-sub">Average client contract — 67% above market benchmark</div>
+    </div>
+    <div class="win-card cyan animate-in" style="--i:6">
+      <div class="win-icon">🌱</div>
+      <div class="win-headline">60%</div>
+      <div class="win-sub">Of clients expand inside SOK — they grow with us</div>
+    </div>
+    <div class="win-card amber animate-in" style="--i:7">
+      <div class="win-icon">🛡️</div>
+      <div class="win-headline">Through two wars</div>
+      <div class="win-sub">Operations stayed live, clients stayed with us</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SLIDE 3: 2025 — Monthly Dynamics
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+<div class="slide-inner">
+  <div class="animate-in">
+    <div class="slide-eyebrow">SOK in 2025</div>
+    <div class="slide-title">2025: <span class="accent">Monthly Dynamics</span></div>
+  </div>
+
+  <div class="flex-row" style="align-items: flex-start;">
+    <!-- LEFT: chart area -->
+    <div class="w-58">
+      <div class="animate-in" style="margin-bottom: 10px;">
+        <div class="chart-wrap" style="height: 270px;">
+          <canvas id="chart-monthly"></canvas>
+        </div>
+      </div>
+      <div class="animate-in">
+        <div class="mini-timeline" style="margin: 0 34px 0 44px;">
+          <div class="timeline-line"></div>
+          <span class="timeline-year" style="left: 0%;">Jan&nbsp;25</span>
+          <span class="timeline-year" style="left: 21.4%;">Apr&nbsp;25</span>
+          <span class="timeline-year" style="left: 42.9%;">Jul&nbsp;25</span>
+          <span class="timeline-year" style="left: 64.3%;">Oct&nbsp;25</span>
+          <span class="timeline-year" style="left: 85.7%;">Jan&nbsp;26</span>
+          <span class="timeline-year" style="left: 100%;">Mar&nbsp;26</span>
+          <div class="timeline-dot blue" style="left: 21.4%;"></div>
+          <span class="timeline-label below" style="left: 21.4%;">RL Phase 2</span>
+          <div class="timeline-dot red" style="left: 35.7%;"></div>
+          <span class="timeline-label above" style="left: 35.7%;">Iran war</span>
+          <div class="timeline-dot red" style="left: 100%;"></div>
+          <span class="timeline-label above" style="left: 100%;">2nd war</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: KPI cards -->
+    <div class="w-42">
+      <div class="grid-2x3">
+        <div class="card animate-in">
+          <div class="card-title">2025 Revenue</div>
+          <div class="card-value sm"><span class="countup">&#8362;15.9M</span></div>
+          <div class="card-delta green">+38% YoY</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-title">Tel Aviv EBITDA</div>
+          <div class="card-value sm"><span class="countup">&#8362;1.9M</span></div>
+          <div class="card-delta green">+292% YoY</div>
+        </div>
+        <div class="card green animate-in">
+          <div class="card-title">TLV Occupancy</div>
+          <div class="card-value sm"><span class="countup">100%</span></div>
+          <div class="card-delta green">+21.9% YoY</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-title">RL Sales Price</div>
+          <div class="card-value sm"><span class="countup">&#8362;1,958/WS</span></div>
+          <div class="card-delta green">+8.5% YoY</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-title">Additional Services</div>
+          <div class="card-value sm"><span class="countup">&#8362;1.36M</span></div>
+          <div class="card-delta green">+76% YoY</div>
+        </div>
+        <div class="card animate-in">
+          <div class="card-title">Contracts Sold</div>
+          <div class="card-value sm"><span class="countup">242 WS</span></div>
+          <div class="card-delta green">+20.6% YoY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom summary -->
+  <div class="animate-in" style="margin-top: 14px;">
+    <div class="summary-bar" style="text-align: left;">
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start;">
+        <div style="flex: 1; min-width: 260px;">
+          <strong style="color: var(--primary-bright);">April 2025:</strong> occupancy drop to 57% &mdash; this is the launch of new 3,000 m&sup2; in RL, not a sales drop. Revenue and new contracts kept growing.
+        </div>
+        <div style="flex: 1; min-width: 260px;">
+          <strong style="color: var(--red);">March 2026:</strong> first revenue and occupancy correction since 2023 (60%) &mdash; 1.5 months into the 2nd Iran war.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SLIDE 4: Market history & forecast (3 graphs)
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-1">
+<div class="slide-inner">
+  <div class="animate-in">
+    <div class="slide-eyebrow">The market we play in</div>
+    <div class="slide-title">Market vs SOK <span class="accent">— occupancy &amp; price dynamics</span></div>
+  </div>
+
+  <!-- HERO: occupancy chart -->
+  <div class="animate-in" style="margin-bottom: 8px;">
+    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 8px;">Office occupancy dynamics in central Israel</div>
+    <div class="chart-wrap" style="height: 280px;">
+      <canvas id="chart-occupancy"></canvas>
+    </div>
+  </div>
+
+  <!-- Mini timeline -->
+  <div class="animate-in" style="margin-bottom: 16px;">
+    <div class="mini-timeline" style="margin: 0 80px 0 48px;">
+      <div class="timeline-line"></div>
+      <div class="timeline-zone" style="left: 0%; width: 62.5%;"></div>
+      <span class="timeline-label above" style="left: 22%; color: var(--red); font-size: 9px;">Hi-tech crisis</span>
+      <span class="timeline-year" style="left: 0%;">H1&rsquo;22</span>
+      <span class="timeline-year" style="left: 25%;">H1&rsquo;23</span>
+      <span class="timeline-year" style="left: 50%;">H1&rsquo;24</span>
+      <span class="timeline-year" style="left: 75%;">H1&rsquo;25</span>
+      <span class="timeline-year" style="left: 100%;">Q1&rsquo;26</span>
+      <div class="timeline-dot red" style="left: 33.4%;"></div>
+      <span class="timeline-label above" style="left: 33.4%;">Oct 7</span>
+      <div class="timeline-dot blue" style="left: 35.4%;"></div>
+      <span class="timeline-label below" style="left: 35.4%;">RL Phase 1</span>
+      <div class="timeline-dot blue" style="left: 70.8%;"></div>
+      <span class="timeline-label below" style="left: 70.8%;">RL Phase 2</span>
+      <div class="timeline-dot red" style="left: 75%;"></div>
+      <span class="timeline-label above" style="left: 75%;">Iran war</span>
+      <div class="timeline-dot red" style="left: 100%;"></div>
+      <span class="timeline-label above" style="left: 100%;">2nd war</span>
+    </div>
+  </div>
+
+  <!-- Summary bar -->
+  <div class="animate-in" style="margin-bottom: 18px;">
+    <div class="summary-bar" style="text-align: left;">
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start;">
+        <div style="flex: 1; min-width: 220px;">
+          <strong style="color: var(--red);">Market:</strong> headwind every year — sub-markets dropped &minus;6 to &minus;17 pp since 2022.
+        </div>
+        <div style="flex: 1; min-width: 220px;">
+          <strong style="color: var(--green);">SOK against the market:</strong> price and occupancy keep growing while the market falls.
+        </div>
+        <div style="flex: 1; min-width: 220px;">
+          <strong style="color: var(--primary-bright);">Scale:</strong> at current prices and occupancy, just one more location pushes us into the black.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lower charts -->
+  <div class="animate-in">
+    <div class="flex-row" style="align-items: stretch; gap: 48px;">
+      <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 10px;">SOK RL price dynamics (Smart Office)</div>
+        <div class="chart-wrap" style="height: 190px;">
+          <canvas id="chart-pricing"></canvas>
+        </div>
+        <div class="benchmark-callouts">
+          <span class="callout-chip green">In Rishon we sell at Tel Aviv prices</span>
+        </div>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 10px;">SOK TLV prices (Service Office) vs Class A/B market</div>
+        <div class="chart-wrap" style="height: 190px;">
+          <canvas id="chart-benchmark"></canvas>
+        </div>
+        <div class="benchmark-callouts">
+          <span class="callout-chip green">+14&ndash;29% vs Class B effective</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SLIDE 5: Competitive Landscape
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+<div class="slide-inner">
+  <div class="animate-in">
+    <div class="slide-eyebrow">Where we stand</div>
+    <div class="slide-title">Competitive <span class="accent">Landscape</span></div>
+  </div>
+
+  <div class="flex-row" style="align-items: flex-start;">
+    <div class="w-48">
+      <div class="animate-in">
+        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 8px;">Top-10 operators by area (m&sup2;)</div>
+        <div class="chart-wrap" style="height: 340px;">
+          <canvas id="chart-operators"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="w-52">
+      <div class="animate-in">
+        <div class="section-header green">Institutional entry into flex</div>
+        <div class="card green">
+          <div class="deal-entry">
+            <strong>Azrieli Group &rarr; POINT</strong><br>
+            <span class="deal-meta">Acquired Labs &#8362;130M &middot; largest REIT in Israel with own flex brand</span>
+          </div>
+          <div class="deal-entry">
+            <strong>Fattal Hotels &rarr; ROOMS</strong><br>
+            <span class="deal-meta">14 locations &middot; 70K m&sup2; &middot; hotel group owns flex network</span>
+          </div>
+          <div class="deal-entry">
+            <strong>Ashtrom Properties &rarr; Ashtrom Port</strong><br>
+            <span class="deal-meta">3 locations &middot; 9K m&sup2; &middot; developer launches own brand</span>
+          </div>
+          <div class="deal-entry">
+            <strong>Edgar Investment &rarr; Brain Embassy</strong><br>
+            <span class="deal-meta">2 locations &middot; 9K m&sup2; &middot; investment group enters coworking</span>
+          </div>
+          <div class="deal-entry">
+            <strong>AMPA Group &rarr; WeWork Israel</strong><br>
+            <span class="deal-meta">14 locations &middot; 102K m&sup2; &middot; exclusive franchisee, runs the network</span>
+          </div>
+          <div class="deal-entry">
+            <strong>Harel Insurance &rarr; Mindspace</strong><br>
+            <span class="deal-meta">Partnership &middot; insurer enters flex</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="animate-in" style="margin-top: 14px;">
+    <div class="summary-bar" style="text-align: left; padding: 14px 18px;">
+      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 8px;">Global market today</div>
+      <ul style="list-style: none; padding: 0; margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--text-secondary);">
+        <li>&bull; Flex market <strong style="color: var(--text);">$45B</strong> in 2025, CAGR <strong style="color: var(--green);">17%+</strong> through 2032 <span style="color: var(--text-muted);">(Fortune Business Insights)</span></li>
+        <li>&bull; <strong style="color: var(--text);">CBRE acquired Industrious</strong> for $800M &mdash; #1 CRE in the world enters flex <span style="color: var(--text-muted);">(Jan 2025)</span></li>
+        <li>&bull; Corporates = <strong style="color: var(--text);">47%</strong> of global flex (vs 13% in 2020); 55% of large companies use flex <span style="color: var(--text-muted);">(Cushman &amp; Wakefield)</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SLIDE 6: Strategy 2026
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+<div class="slide-inner">
+  <div class="animate-in">
+    <div class="slide-eyebrow">From the strategic session</div>
+    <div class="slide-title">Strategy <span class="accent">2026</span></div>
+  </div>
+
+  <!-- Pillars -->
+  <div class="strategy-grid">
+    <div class="pillar-card productivity animate-in">
+      <div class="pillar-num">PILLAR 01</div>
+      <div class="pillar-name">Productivity</div>
+      <div class="pillar-desc">Environments where teams do more with less — healthy space, automated operations, hands-on HR support.</div>
+    </div>
+    <div class="pillar-card flexibility animate-in">
+      <div class="pillar-num">PILLAR 02</div>
+      <div class="pillar-name">Flexibility</div>
+      <div class="pillar-desc">Terms, layouts and locations adapt to the client — not the other way around. No bureaucracy, no rigid commitments.</div>
+    </div>
+    <div class="pillar-card business animate-in">
+      <div class="pillar-num">PILLAR 03</div>
+      <div class="pillar-name">Business Opportunities</div>
+      <div class="pillar-desc">SOK as a business ecosystem — marketplace, perks, referrals, networks. Members grow through SOK.</div>
+    </div>
+  </div>
+
+  <!-- Priorities -->
+  <div class="priorities-section animate-in">
+    <div class="priorities-title">⚡ 2026 Priorities</div>
+    <div class="priorities-grid">
+      <div class="priority-item hero">
+        <div class="priority-tag">★ NORTH STAR</div>
+        <div class="priority-name">Productivity</div>
+        <div class="priority-desc">The defining priority for 2026 — everything we build connects to it. Our brand, our service, our metric.</div>
+      </div>
+      <div class="priority-item">
+        <div class="priority-tag">DIRECTION</div>
+        <div class="priority-name">AI-first</div>
+        <div class="priority-desc">AI across operations and client tools — automate internal work, promote AI tools to members.</div>
+      </div>
+      <div class="priority-item">
+        <div class="priority-tag">DIRECTION</div>
+        <div class="priority-name">Partnerships</div>
+        <div class="priority-desc">More supplier &amp; ecosystem partnerships to grow business opportunities for members.</div>
+      </div>
+      <div class="priority-item">
+        <div class="priority-tag">BUSINESS GOAL</div>
+        <div class="priority-name">$1M EBITDA</div>
+        <div class="priority-desc">Where we want to land as a business by year-end.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- North Star bar -->
+  <div class="northstar-bar animate-in">
+    <span class="northstar-icon">🧭</span>
+    <div><strong>Long-term North Star:</strong> we continue searching for SOK&rsquo;s long-term vision — what defines the company beyond 2026.</div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SLIDE 7: Team & Org Structure
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-5">
+<div class="slide-inner">
+  <div class="animate-in">
+    <div class="org-title">SOK Works Israel</div>
+    <div class="org-sub">Team &amp; Org Structure · 2026</div>
+  </div>
+
+  <!-- Top tier: Operation / Sales & Marketing / Construction -->
+  <div class="org-top animate-in">
+    <div class="dept operation">
+      <div class="dept-name">Operation Department</div>
+      <div class="person lead">
+        <span class="person-name">Viki Kotler</span>
+        <span class="person-role">BackOffice Manager</span>
+      </div>
+      <div class="person lead">
+        <span class="person-name">Lana Pier</span>
+        <span class="person-role">TLV Site Manager</span>
+      </div>
+      <div class="person-sub">
+        <div class="person">
+          <span class="person-name">Shahav Beck</span>
+          <span class="person-role">Community Manager</span>
+        </div>
+      </div>
+      <div class="person lead">
+        <span class="person-name">Liel Fattal</span>
+        <span class="person-role">RL Site Manager</span>
+      </div>
+      <div class="person-sub">
+        <div class="person">
+          <span class="person-name">Aviv Ginsburg</span>
+          <span class="person-role">Community Manager</span>
+        </div>
+        <div class="person">
+          <span class="person-name">Shlomo Telem</span>
+          <span class="person-role">Community Manager</span>
+        </div>
+        <div class="person">
+          <span class="person-name">Lidor Rotenberg</span>
+          <span class="person-role">Community Manager</span>
+        </div>
+        <div class="person vacancy">
+          <span class="person-name">Vacancy</span>
+          <span class="person-role">Community Manager</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept sales">
+      <div class="dept-name">Sales &amp; Marketing</div>
+      <div class="person lead">
+        <span class="person-name">Astar Bar</span>
+        <span class="person-role">VP S&amp;M</span>
+      </div>
+      <div class="person-sub">
+        <div class="person">
+          <span class="person-name">Nir Kfir</span>
+          <span class="person-role">Sales Manager</span>
+        </div>
+        <div class="person vacancy">
+          <span class="person-name">Vacancy</span>
+          <span class="person-role">Sales Director</span>
+        </div>
+        <div class="person">
+          <span class="person-name">Alena Bersudskaya</span>
+          <span class="person-role">Marketing Manager</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept construction">
+      <div class="dept-name">Construction Department</div>
+      <div class="person lead">
+        <span class="person-name">Ronen Bechor</span>
+        <span class="person-role">Project Manager</span>
+      </div>
+      <div class="person-sub">
+        <div class="person">
+          <span class="person-name">Albert Levin</span>
+          <span class="person-role">Architect</span>
+        </div>
+        <div class="person">
+          <span class="person-name">Meir Levi</span>
+          <span class="person-role">GC</span>
+        </div>
+        <div class="person">
+          <span class="person-name">Suppliers</span>
+          <span class="person-role">External</span>
+        </div>
+      </div>
+      <div class="person lead">
+        <span class="person-name">Igor Marchenko</span>
+        <span class="person-role">SOK E</span>
+      </div>
+      <div class="person lead">
+        <span class="person-name">Maksim Kartashov</span>
+        <span class="person-role">Project Manager</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CEO -->
+  <div class="org-ceo animate-in">
+    <div class="ceo-card">
+      <div class="ceo-name">Aleks Barafanov</div>
+      <div class="ceo-role">CEO</div>
+    </div>
+  </div>
+
+  <!-- Bottom tier: Support / Finance / Legal -->
+  <div class="org-bottom animate-in">
+    <div class="dept support">
+      <div class="dept-name">Support</div>
+      <div class="person">
+        <span class="person-name">Igal Kovalerchik</span>
+        <span class="person-role">Facility Manager</span>
+      </div>
+      <div class="person">
+        <span class="person-name">Eddi Shimkin</span>
+        <span class="person-role">IT Manager</span>
+      </div>
+      <div class="person">
+        <span class="person-name">DX Team</span>
+        <span class="person-role">External IT Support</span>
+      </div>
+    </div>
+    <div class="dept finance">
+      <div class="dept-name">Finance Department</div>
+      <div class="person">
+        <span class="person-name">Alona Redkina</span>
+        <span class="person-role">Accountant</span>
+      </div>
+      <div class="person">
+        <span class="person-name">Vadim Osadchy</span>
+        <span class="person-role">CPA</span>
+      </div>
+      <div class="person">
+        <span class="person-name">Sofi Ionova</span>
+        <span class="person-role">Finance Analyst</span>
+      </div>
+    </div>
+    <div class="dept legal">
+      <div class="dept-name">Legal</div>
+      <div class="person">
+        <span class="person-name">Kirill Shefer</span>
+        <span class="person-role">Lawyer</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /slides-container -->
+
+<script>
+// ── Navigation ──────────────────────────────────────────────
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.nav-dot');
+const counter = document.querySelector('.slide-counter');
+let current = 0;
+const total = slides.length;
+
+function goTo(idx) {
+  if (idx < 0 || idx >= total || idx === current) return;
+  slides[current].classList.remove('active');
+  dots[current].classList.remove('active');
+  current = idx;
+  slides[current].classList.add('active');
+  dots[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  initChartsForSlide(current);
+  if (current === 2) triggerCountUp();
+}
+
+dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.slide)));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    goTo(current + 1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    goTo(current - 1);
+  }
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+});
+
+// ── Chart defaults (dark theme) ─────────────────────────────
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#cbd5e1';
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.pointStyleWidth = 10;
+Chart.defaults.plugins.legend.labels.boxHeight = 7;
+Chart.defaults.plugins.legend.labels.padding = 12;
+Chart.defaults.plugins.legend.labels.font = { size: 10, family: "'Inter', sans-serif" };
+
+const gridColor = 'rgba(148,163,184,0.10)';
+const chartAnimDuration = 1400;
+
+const chartInstances = {};
+const chartsInitialized = {};
+
+function initChartsForSlide(slideIdx) {
+  if (chartsInitialized[slideIdx]) return;
+  chartsInitialized[slideIdx] = true;
+  switch(slideIdx) {
+    case 2: initMonthlyChart(); break;
+    case 3: initMarketCharts(); break;
+    case 4: initOperatorsChart(); break;
+  }
+}
+
+// Reusable plugin: dashed vertical event lines
+function makeEventLinesPlugin(events) {
+  return {
+    id: 'eventLines_' + Math.random().toString(36).slice(2, 8),
+    beforeDatasetsDraw(chart) {
+      const xScale = chart.scales.x;
+      const yScale = chart.scales.y;
+      if (!xScale || !yScale) return;
+      const maxIdx = chart.data.labels.length - 1;
+      const ctx = chart.ctx;
+      events.forEach(ev => {
+        if (ev.x < 0 || ev.x > maxIdx) return;
+        const x = xScale.getPixelForValue(ev.x);
+        if (x < xScale.left - 0.5 || x > xScale.right + 0.5) return;
+        ctx.save();
+        ctx.setLineDash(ev.dash || [4, 3]);
+        ctx.strokeStyle = ev.color || 'rgba(148,163,184,0.55)';
+        ctx.lineWidth = ev.width || 1.1;
+        ctx.beginPath();
+        ctx.moveTo(x, yScale.top);
+        ctx.lineTo(x, yScale.bottom);
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+  };
+}
+const EVENT_RED = 'rgba(248,113,113,0.7)';
+const EVENT_BLUE = 'rgba(96,165,250,0.7)';
+
+// ── SLIDE 2: Market vs SOK ─────────────────────────────────
+function initMarketCharts() {
+  const periodLabels = ["H1'22","H2'22","H1'23","H2'23","H1'24","H2'24","H1'25","H2'25","Q1'26"];
+  const eventsOcc = [
+    { x: 3.0,  color: EVENT_RED },
+    { x: 3.36, color: EVENT_BLUE },
+    { x: 5.6,  color: EVENT_BLUE },
+    { x: 6.4,  color: EVENT_RED },
+    { x: 7.84, color: EVENT_RED }
+  ];
+
+  // Hero occupancy chart
+  const ctxOcc = document.getElementById('chart-occupancy').getContext('2d');
+  const submarketEndLabels = [
+    { name: 'N-TLV CBD + Beit HaMishpat', short: 'N-TLV CBD',    color: '#60a5fa', delta: '0' },
+    { name: 'Ramat Gan Diamond',          short: 'Ramat Gan',    color: '#2dd4bf', delta: '−6' },
+    { name: 'TLV City Area',              short: 'TLV City',     color: '#c084fc', delta: '−9' },
+    { name: 'Yitzhak Sadeh',              short: 'Y. Sadeh',     color: '#fbbf24', delta: '−6' },
+    { name: 'Bnei Brak BBC',              short: 'Bnei Brak',    color: '#f87171', delta: '−17' }
+  ];
+
+  chartInstances.occ = new Chart(ctxOcc, {
+    type: 'line',
+    data: {
+      labels: periodLabels,
+      datasets: [
+        { label: 'N-TLV CBD + Beit HaMishpat', data: [98.5,98.0,96.0,95.5,96.5,96.3,97.5,98.1,98.0], borderColor: 'rgba(96,165,250,0.65)', backgroundColor: 'transparent', borderWidth: 1.4, pointRadius: 2, pointBackgroundColor: 'rgba(96,165,250,0.85)', tension: 0.28, fill: false },
+        { label: 'Ramat Gan Diamond', data: [97.5,96.8,95.8,95.2,95.0,94.7,93.5,92.5,91.8], borderColor: 'rgba(45,212,191,0.65)', backgroundColor: 'transparent', borderWidth: 1.4, pointRadius: 2, pointBackgroundColor: 'rgba(45,212,191,0.85)', tension: 0.28, fill: false },
+        { label: 'TLV City Area', data: [96.5,95.8,95.4,94.8,92.7,92.0,89.5,87.9,86.8], borderColor: 'rgba(192,132,252,0.7)', backgroundColor: 'transparent', borderWidth: 1.6, pointRadius: 2, pointBackgroundColor: 'rgba(192,132,252,0.9)', tension: 0.28, fill: false },
+        { label: 'Yitzhak Sadeh', data: [96.0,95.0,94.2,93.8,93.4,93.0,91.8,90.5,89.8], borderColor: 'rgba(251,191,36,0.65)', backgroundColor: 'transparent', borderWidth: 1.4, pointRadius: 2, pointBackgroundColor: 'rgba(251,191,36,0.85)', tension: 0.28, fill: false },
+        { label: 'Bnei Brak BBC', data: [95.0,94.5,94.0,93.8,94.8,94.4,88.5,81.2,78.5], borderColor: 'rgba(248,113,113,0.85)', backgroundColor: 'transparent', borderWidth: 2.0, pointRadius: 2.5, pointBackgroundColor: '#f87171', tension: 0.28, fill: false },
+        { label: 'SOK (blended occupancy)', data: [76,60,41,51,68,85,60,65,67], borderColor: '#f1f5f9', backgroundColor: 'rgba(241,245,249,0.05)', borderWidth: 3.0, pointRadius: 4.5, pointHoverRadius: 6, pointBackgroundColor: '#f1f5f9', pointBorderColor: '#0a0e1a', pointBorderWidth: 1.8, tension: 0.3, fill: false, order: -1 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: chartAnimDuration },
+      interaction: { mode: 'index', intersect: false },
+      layout: { padding: { top: 26, right: 100, left: 2, bottom: 4 } },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 9.5 }, padding: 6, boxHeight: 6, color: '#cbd5e1' } },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8' } },
+        y: { min: 40, max: 100, grid: { color: gridColor }, ticks: { callback: v => v + '%', stepSize: 10, font: { size: 10 }, color: '#94a3b8' } }
+      }
+    },
+    plugins: [
+      makeEventLinesPlugin([
+        { x: 2.67, color: EVENT_RED },
+        { x: 2.83, color: EVENT_BLUE },
+        { x: 5.67, color: EVENT_BLUE },
+        { x: 6.00, color: EVENT_RED },
+        { x: 8.00, color: EVENT_RED }
+      ]),
+      {
+        id: 'occLabels',
+        afterDatasetsDraw(chart) {
+          const ctx = chart.ctx;
+          const placed = [];
+          submarketEndLabels.forEach(item => {
+            const dsIdx = chart.data.datasets.findIndex(d => d.label === item.name);
+            if (dsIdx < 0) return;
+            const meta = chart.getDatasetMeta(dsIdx);
+            const last = meta.data[meta.data.length - 1];
+            if (!last) return;
+            const val = chart.data.datasets[dsIdx].data[meta.data.length - 1];
+            let y = last.y;
+            placed.forEach(py => { if (Math.abs(y - py) < 12) y = py + 12; });
+            placed.push(y);
+            ctx.save();
+            ctx.font = "600 10px 'Inter', sans-serif";
+            ctx.fillStyle = item.color;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(item.short + ' ' + val + '% (' + item.delta + 'pp)', last.x + 8, y);
+            ctx.restore();
+          });
+          const sokIdx = chart.data.datasets.findIndex(d => d.label === 'SOK (blended occupancy)');
+          if (sokIdx < 0) return;
+          const meta = chart.getDatasetMeta(sokIdx);
+          const values = chart.data.datasets[sokIdx].data;
+          ctx.save();
+          ctx.font = "700 11px 'JetBrains Mono', monospace";
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          meta.data.forEach((point, i) => {
+            const text = values[i] + '%';
+            const y = point.y - 14;
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = 'rgba(10,14,26,0.95)';
+            ctx.strokeText(text, point.x, y);
+            ctx.fillStyle = '#f1f5f9';
+            ctx.fillText(text, point.x, y);
+          });
+          ctx.restore();
+        }
+      }
+    ]
+  });
+
+  // Pricing chart
+  const ctxPrice = document.getElementById('chart-pricing').getContext('2d');
+  const priceLabels = ["Q1'24","Q2'24","Q3'24","Q4'24","Q1'25","Q2'25","Q3'25","Q4'25","Q1'26"];
+  const sokPrices = [1671, 1828, 1840, 1952, 1900, 1940, 1965, 1785, 1781];
+
+  chartInstances.price = new Chart(ctxPrice, {
+    type: 'line',
+    data: {
+      labels: priceLabels,
+      datasets: [{
+        label: 'SOK RLZ new sales',
+        data: sokPrices,
+        borderColor: '#f1f5f9',
+        backgroundColor: 'rgba(241,245,249,0.05)',
+        borderWidth: 2,
+        pointRadius: 3.5,
+        pointBackgroundColor: '#f1f5f9',
+        pointBorderColor: '#0a0e1a',
+        pointBorderWidth: 1.5,
+        tension: 0.25,
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: chartAnimDuration },
+      layout: { padding: { top: 16, right: 4, left: 4 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => '₪' + ctx.parsed.y + '/WS' } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#94a3b8' } },
+        y: { min: 1200, max: 3000, grid: { color: gridColor }, ticks: { callback: v => '₪' + v, font: { size: 9 }, color: '#94a3b8', maxTicksLimit: 6 } }
+      }
+    },
+    plugins: [
+      {
+        id: 'tierBands',
+        beforeDatasetsDraw(chart) {
+          const yScale = chart.scales.y;
+          const xScale = chart.scales.x;
+          const ctx = chart.ctx;
+          const bands = [
+            { min: 2400, max: 3000, color: 'rgba(245,158,11,0.13)', label: 'WeWork flagship  ·  ROOMS Acro/Sky  ·  POINT  ·  The Point' },
+            { min: 1700, max: 2400, color: 'rgba(59,130,246,0.13)',  label: 'Mindspace  ·  Brain Embassy  ·  B-hive  ·  MIXER' },
+            { min: 1200, max: 1700, color: 'rgba(148,163,184,0.10)', label: 'Regus  ·  Urban Place  ·  Ashtrom Port  ·  Dogether' }
+          ];
+          bands.forEach(b => {
+            const yTop = yScale.getPixelForValue(b.max);
+            const yBot = yScale.getPixelForValue(b.min);
+            ctx.save();
+            ctx.fillStyle = b.color;
+            ctx.fillRect(xScale.left, yTop, xScale.right - xScale.left, yBot - yTop);
+            ctx.font = "500 9px 'Inter', sans-serif";
+            ctx.fillStyle = 'rgba(203,213,225,0.7)';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(b.label, xScale.left + 6, yTop + 4);
+            ctx.restore();
+          });
+        }
+      },
+      makeEventLinesPlugin([
+        { x: 4.33, color: EVENT_BLUE },
+        { x: 5.0,  color: EVENT_RED },
+        { x: 8.0,  color: EVENT_RED }
+      ]),
+      {
+        id: 'sokPriceLabels',
+        afterDatasetsDraw(chart) {
+          const ctx = chart.ctx;
+          const meta = chart.getDatasetMeta(0);
+          const values = chart.data.datasets[0].data;
+          ctx.save();
+          ctx.font = "500 9.5px 'JetBrains Mono', monospace";
+          ctx.textAlign = 'center';
+          meta.data.forEach((point, i) => {
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(10,14,26,0.85)';
+            ctx.strokeText('₪' + values[i], point.x, point.y - 9);
+            ctx.fillStyle = '#f1f5f9';
+            ctx.fillText('₪' + values[i], point.x, point.y - 9);
+          });
+          ctx.restore();
+        }
+      }
+    ]
+  });
+
+  // Benchmark chart
+  const ctxBench = document.getElementById('chart-benchmark').getContext('2d');
+  chartInstances.bench = new Chart(ctxBench, {
+    type: 'line',
+    data: {
+      labels: periodLabels,
+      datasets: [
+        { label: 'Class A — asking', data: [155,150,140,132,130,130,140,142,140], borderColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.3, fill: false },
+        { label: 'Class A — effective', data: [148,138,130,105,110,118,125,123,122], borderColor: 'rgba(96,165,250,0.55)', borderWidth: 1.5, borderDash: [5,3], pointRadius: 0, tension: 0.3, fill: false },
+        { label: 'Class B — effective', data: [130,120,110,92,90,100,108,103,97], borderColor: '#fbbf24', borderWidth: 1.5, borderDash: [5,3], pointRadius: 0, tension: 0.3, fill: false },
+        { label: 'SOK TLV', data: [125,125,125,125,125,125,125,125,125], borderColor: '#f1f5f9', borderWidth: 2, pointRadius: 2.5, pointBackgroundColor: '#f1f5f9', pointBorderColor: '#0a0e1a', pointBorderWidth: 1.2, tension: 0, fill: false, order: -1 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: chartAnimDuration },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 9 }, padding: 5, boxHeight: 6, color: '#cbd5e1' } },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ₪' + ctx.parsed.y + '/m²' } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#94a3b8' } },
+        y: { min: 80, max: 160, grid: { color: gridColor }, ticks: { callback: v => '₪' + v, maxTicksLimit: 5, font: { size: 9 }, color: '#94a3b8' } }
+      }
+    },
+    plugins: [makeEventLinesPlugin(eventsOcc)]
+  });
+}
+
+// ── SLIDE 3: 2025 Monthly Dynamics ─────────────────────────
+function initMonthlyChart() {
+  const ctx = document.getElementById('chart-monthly').getContext('2d');
+  const monthLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan\'26','Feb\'26','Mar\'26'];
+  const rev2025 = [1137,1068,1305,1261,1273,1324,1326,1355,1371,1385,1488,1560, null, null, null];
+  const rev2026 = [null,null,null,null,null,null,null,null,null,null,null,null, 1555, 1603, 1434];
+  const occ = [86,86,85,57,57,58,61,62,61,62,64,65,66,67,60];
+
+  chartInstances.monthly = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: monthLabels,
+      datasets: [
+        { label: '2025 Revenue', data: rev2025, backgroundColor: 'rgba(96,165,250,0.75)', borderColor: '#60a5fa', borderWidth: 1, borderRadius: 3, order: 3, yAxisID: 'y' },
+        { label: '2026 Revenue', data: rev2026, backgroundColor: 'rgba(96,165,250,0.4)', borderColor: 'rgba(96,165,250,0.6)', borderWidth: 1, borderRadius: 3, order: 2, yAxisID: 'y' },
+        { label: 'Occupancy (%)', data: occ, type: 'line', borderColor: '#10b981', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#10b981', pointBorderColor: '#0a0e1a', pointBorderWidth: 1.5, tension: 0.3, fill: false, order: 1, yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: chartAnimDuration },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', align: 'end', labels: { font: { size: 9 }, padding: 8, color: '#cbd5e1' } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              if (ctx.dataset.yAxisID === 'y1') return ctx.dataset.label + ': ' + ctx.parsed.y + '%';
+              if (ctx.parsed.y === null) return '';
+              return ctx.dataset.label;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#94a3b8' } },
+        y: { position: 'left', display: false },
+        y1: { position: 'right', min: 40, max: 100, grid: { display: false }, ticks: { callback: v => v + '%', maxTicksLimit: 5, font: { size: 9 }, color: '#94a3b8' } }
+      }
+    },
+    plugins: [
+      makeEventLinesPlugin([
+        { x: 3,  color: EVENT_BLUE },
+        { x: 5,  color: EVENT_RED },
+        { x: 14, color: EVENT_RED }
+      ]),
+      {
+        id: 'occLabels',
+        afterDatasetsDraw(chart) {
+          const ctx = chart.ctx;
+          const occIdx = chart.data.datasets.findIndex(d => d.label === 'Occupancy (%)');
+          if (occIdx < 0) return;
+          const meta = chart.getDatasetMeta(occIdx);
+          const values = chart.data.datasets[occIdx].data;
+          ctx.save();
+          ctx.font = "700 9.5px 'JetBrains Mono', monospace";
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          meta.data.forEach((point, i) => {
+            const text = values[i] + '%';
+            const y = point.y - 11;
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = 'rgba(10,14,26,0.95)';
+            ctx.strokeText(text, point.x, y);
+            ctx.fillStyle = '#10b981';
+            ctx.fillText(text, point.x, y);
+          });
+          ctx.restore();
+        }
+      }
+    ]
+  });
+}
+
+// ── SLIDE 4: Operators ─────────────────────────────────────
+function initOperatorsChart() {
+  const ctx = document.getElementById('chart-operators').getContext('2d');
+  const operators = [
+    'Brain Embassy', 'Ashtrom Port', 'SOK', 'Point (Azrieli)',
+    'MIXER', 'BE ALL', 'Mindspace', 'IWG / Regus',
+    'ROOMS (Fattal)', 'WeWork (AMPA)'
+  ];
+  const sqm = [9000, 9050, 10600, 14750, 19000, 25000, 45000, 51354, 65000, 102000];
+  const locations = ['2 loc.', '3 loc.', '2 loc.', '2 loc.', '5 loc.', '4 loc.', '10+ loc.', '21-30 loc.', '8-10 loc.', '14 loc.'];
+  const barColors = sqm.map((v, i) => i === 2 ? 'rgba(96,165,250,0.85)' : 'rgba(148,163,184,0.35)');
+  const borderColors = sqm.map((v, i) => i === 2 ? '#60a5fa' : 'rgba(148,163,184,0.5)');
+
+  chartInstances.operators = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: operators,
+      datasets: [{
+        data: sqm,
+        backgroundColor: barColors,
+        borderColor: borderColors,
+        borderWidth: 1,
+        borderRadius: 3
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: chartAnimDuration },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ctx.parsed.x.toLocaleString() + ' m²' } }
+      },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { callback: v => (v/1000).toFixed(0) + 'K', maxTicksLimit: 5, font: { size: 9 }, color: '#94a3b8' } },
+        y: {
+          grid: { display: false },
+          ticks: {
+            font: function(context) {
+              const idx = context.index;
+              return { size: 10, weight: idx === 2 ? '700' : '400', family: "'Inter', sans-serif" };
+            },
+            color: function(context) { return context.index === 2 ? '#60a5fa' : '#cbd5e1'; }
+          }
+        }
+      }
+    },
+    plugins: [{
+      id: 'locationLabels',
+      afterDraw(chart) {
+        const meta = chart.getDatasetMeta(0);
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.font = "400 9px 'JetBrains Mono', monospace";
+        ctx.fillStyle = '#94a3b8';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        meta.data.forEach((bar, i) => {
+          ctx.fillText(locations[i], bar.x + 6, bar.y);
+        });
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+// ── Count-up ───────────────────────────────────────────────
+let countUpTriggered = false;
+function triggerCountUp() {
+  if (countUpTriggered) return;
+  countUpTriggered = true;
+  const targets = [
+    { from: 0, to: 15.9, prefix: '₪', suffix: 'M', decimals: 1 },
+    { from: 0, to: 1.9, prefix: '₪', suffix: 'M', decimals: 1 },
+    { from: 60, to: 100, prefix: '', suffix: '%', decimals: 0 },
+    { from: 1500, to: 1958, prefix: '₪', suffix: '/WS', decimals: 0, comma: true },
+    { from: 0, to: 1.36, prefix: '₪', suffix: 'M', decimals: 2 },
+    { from: 100, to: 242, prefix: '', suffix: ' WS', decimals: 0 }
+  ];
+  const countEls = document.querySelectorAll('#slide-2 .countup');
+  if (countEls.length === 0) return;
+  targets.forEach((t, i) => {
+    if (!countEls[i]) return;
+    const el = countEls[i];
+    const duration = 1600;
+    const startTime = performance.now();
+    function easeOutExpo(x) { return x === 1 ? 1 : 1 - Math.pow(2, -10 * x); }
+    function animate(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutExpo(progress);
+      const current = t.from + (t.to - t.from) * eased;
+      let formatted;
+      if (t.comma) formatted = t.prefix + Math.round(current).toLocaleString() + t.suffix;
+      else if (t.decimals === 0) formatted = t.prefix + Math.round(current) + t.suffix;
+      else formatted = t.prefix + current.toFixed(t.decimals) + t.suffix;
+      el.textContent = formatted;
+      if (progress < 1) requestAnimationFrame(animate);
+    }
+    setTimeout(() => requestAnimationFrame(animate), i * 80);
+  });
+}
+
+// Initialize first slide
+initChartsForSlide(0);
+</script>
+</body>
+</html>
